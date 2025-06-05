@@ -56,13 +56,22 @@ public class FinanceTrackingSystem {
         }
         BankAccount account = findAccount(nameAccount)
                 .orElseThrow(() -> new IllegalArgumentException("Bank account not found"));
-        account.increaseBalance(expense);
+        account.reduceBalance(expense);
         addHistoryRecord("Expense", expense, account.getAccountName());
     }
 
     public void addBankAccount(String accountName) {
         BankAccount bankAccount = new BankAccount(accountName);
         listOfBankAccounts.add(bankAccount);
+    }
+
+    public void deleteBankAccount(String accountName) {
+        BankAccount account = findAccount(accountName)
+                .orElseThrow(() -> new IllegalArgumentException("Bank account not found"));
+        generalBankAccount.increaseBalance(account.getAccountBalance());
+        addHistoryRecord("Income", account.getAccountBalance(),
+                generalBankAccount.getAccountName() + " (" + account.getAccountName() + " deleted)");
+        listOfBankAccounts.remove(account);
     }
 
     public int getListOfBankAccountsSize() {
@@ -84,7 +93,6 @@ public class FinanceTrackingSystem {
             System.out.println("No finance transactions have been added yet!");
             return;
         }
-
         int startIndex = Math.max(0, historyOfBankOperations.size() - 10);
         for (int i = startIndex; i < historyOfBankOperations.size(); i++) {
             System.out.println(historyOfBankOperations.get(i));
@@ -99,7 +107,7 @@ public class FinanceTrackingSystem {
 
     private void addHistoryRecord(String typeOperation, int amount, String accountName) {
         String record = String.format(
-                "№%d: %s of %d on account '%s'",
+                "#%d: %s of %d on account '%s'",
                 historyId++,
                 typeOperation,
                 amount,
