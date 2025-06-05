@@ -79,6 +79,18 @@ public class FinanceTrackingSystem {
         }
     }
 
+    public void showBankHistory() {
+        if (historyOfBankOperations.isEmpty()) {
+            System.out.println("No finance transactions have been added yet!");
+            return;
+        }
+
+        int startIndex = Math.max(0, historyOfBankOperations.size() - 10);
+        for (int i = startIndex; i < historyOfBankOperations.size(); i++) {
+            System.out.println(historyOfBankOperations.get(i));
+        }
+    }
+
     private Optional<BankAccount> findAccount(String name) {
         return listOfBankAccounts.stream()
                 .filter(acc -> acc.getAccountName().equals(name))
