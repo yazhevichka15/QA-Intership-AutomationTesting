@@ -78,16 +78,12 @@ public class Main {
     private static void workWithAccounts() {
         System.out.println("\n4.1. Add bank account");
         System.out.println("4.2. Delete bank account");
-        System.out.println("4.3. Update bank account");
 
         switch (scanner.nextLine().trim()) {
             case "4.1" -> {
                 return;
             }
             case "4.2" -> {
-                return;
-            }
-            case "4.3" -> {
                 return;
             }
             default -> System.out.println("Incorrect command selected! Try again");

@@ -3,7 +3,7 @@ import FinanceSystem.FinanceParts.*;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
+
 
 
 public class FinanceTrackingSystem {
@@ -25,14 +25,14 @@ public class FinanceTrackingSystem {
 
     public void addIncome(int income) {
         GeneralBalance += income;
-        GeneralBankAccount.AccountBalance += income;
+        GeneralBankAccount.increaseBalance(income);
     }
 
     public void addIncome(String nameAccount, int income) {
         GeneralBalance += income;
         for (BankAccount account : ListOfBankAccounts) {
-            if (account.AccountName == nameAccount) {
-                account.AccountBalance += income;
+            if (account.getAccountName() == nameAccount) {
+                account.increaseBalance(income);
                 break;
             };
         }
@@ -40,14 +40,14 @@ public class FinanceTrackingSystem {
 
     public void addExpense(int expense) {
         GeneralBalance -= expense;
-        GeneralBankAccount.AccountBalance -= expense;
+        GeneralBankAccount.reduceBalance(expense);
     }
 
     public void addExpense(String nameAccount, int expense) {
         GeneralBalance -= expense;
         for (BankAccount account : ListOfBankAccounts) {
-            if (account.AccountName == nameAccount) {
-                account.AccountBalance -= expense;
+            if (account.getAccountName() == nameAccount) {
+                account.reduceBalance(expense);
                 break;
             };
         }
@@ -60,7 +60,7 @@ public class FinanceTrackingSystem {
 
     public void showBankAccounts() {
         for (BankAccount account : ListOfBankAccounts) {
-            System.out.println(account.AccountName + ": " + account.AccountBalance);
+            System.out.println(account.getAccountName() + ": " + account.getAccountBalance());
         }
     }
 }
