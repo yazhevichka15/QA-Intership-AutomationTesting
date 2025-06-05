@@ -46,7 +46,7 @@ public class Main {
     }
 
     private static void addIncomeRecord() {
-        if (finSystem.ListOfBankAccounts.size() > 1) {
+        if (finSystem.getListOfBankAccountsSize() > 1) {
             System.out.print("\nEnter the name of the income account: ");
             String nameIncomeAccount = scanner.nextLine().trim();
 
@@ -61,7 +61,7 @@ public class Main {
     }
 
     private static void addExpenseRecord() {
-        if (finSystem.ListOfBankAccounts.size() > 1) {
+        if (finSystem.getListOfBankAccountsSize() > 1) {
             System.out.print("\nEnter the name of the expense account: ");
             String nameExpenseAccount = scanner.nextLine().trim();
 
@@ -70,7 +70,7 @@ public class Main {
             finSystem.addExpense(nameExpenseAccount, amountExpense);
         } else {
             System.out.print("\nEnter the amount of expense: ");
-            int amountExpense = Integer.parseInt(scanner.nextLine());  // Используем nextLine() и парсим
+            int amountExpense = Integer.parseInt(scanner.nextLine());
             finSystem.addExpense(amountExpense);
         }
     }
