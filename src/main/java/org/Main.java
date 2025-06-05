@@ -49,12 +49,14 @@ public class Main {
         if (finSystem.ListOfBankAccounts.size() > 1) {
             System.out.print("\nEnter the name of the income account: ");
             String nameIncomeAccount = scanner.nextLine().trim();
+
             System.out.print("\nEnter the amount of income: ");
-            int amoutIncome = scanner.nextInt();
-            finSystem.addIncome(nameIncomeAccount, amoutIncome);
+            int amountIncome = Integer.parseInt(scanner.nextLine());
+            finSystem.addIncome(nameIncomeAccount, amountIncome);
         } else {
             System.out.print("\nEnter the income amount: ");
-            finSystem.addIncome(scanner.nextInt());
+            int amountIncome = Integer.parseInt(scanner.nextLine());
+            finSystem.addIncome(amountIncome);
         }
     }
 
@@ -62,12 +64,14 @@ public class Main {
         if (finSystem.ListOfBankAccounts.size() > 1) {
             System.out.print("\nEnter the name of the expense account: ");
             String nameExpenseAccount = scanner.nextLine().trim();
+
             System.out.print("\nEnter the amount of expense: ");
-            int amoutExpense = scanner.nextInt();
-            finSystem.addExpense(nameExpenseAccount, amoutExpense);
+            int amountExpense = Integer.parseInt(scanner.nextLine());
+            finSystem.addExpense(nameExpenseAccount, amountExpense);
         } else {
             System.out.print("\nEnter the amount of expense: ");
-            finSystem.addExpense(scanner.nextInt());
+            int amountExpense = Integer.parseInt(scanner.nextLine());  // Используем nextLine() и парсим
+            finSystem.addExpense(amountExpense);
         }
     }
 
