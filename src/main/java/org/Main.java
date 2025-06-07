@@ -71,37 +71,33 @@ public class Main {
 
     private static void addExpenseRecord() {
         try {
+            String accountName;
             if (finSystem.getListOfBankAccountsSize() == 1) {
-                if (finSystem.getListOfExpenseCategoriesSize() != 0) {
-                    System.out.print("\nEnter the amount of expense: ");
-                    int amountExpense = Integer.parseInt(scanner.nextLine());
-                    System.out.print("Enter the name of the expense category: ");
-                    String nameExpenseCategory = scanner.nextLine().trim();
-                    finSystem.addExpense("General Bank Account", amountExpense, nameExpenseCategory);
-                    return;
-                }
-                System.out.print("\nEnter the amount of expense: ");
-                int amountExpense = Integer.parseInt(scanner.nextLine());
-                finSystem.addExpense(amountExpense);
-            } else if (finSystem.getListOfExpenseCategoriesSize() == 0) {
-                System.out.print("\nEnter the name of the expense account: ");
-                String nameExpenseAccount = scanner.nextLine().trim();
-                System.out.print("Enter the amount of expense: ");
-                int amountExpense = Integer.parseInt(scanner.nextLine());
-                finSystem.addExpense(nameExpenseAccount, amountExpense);
+                accountName = "General Bank Account";
             } else {
                 System.out.print("\nEnter the name of the expense account: ");
-                String nameExpenseAccount = scanner.nextLine().trim();
-                System.out.print("Enter the amount of expense: ");
-                int amountExpense = Integer.parseInt(scanner.nextLine());
-                System.out.print("Enter the name of the expense category: ");
-                String nameExpenseCategory = scanner.nextLine().trim();
-                finSystem.addExpense(nameExpenseAccount, amountExpense, nameExpenseCategory);
+                accountName = scanner.nextLine().trim();
+            }
+            System.out.print("Enter the amount of expense: ");
+            int amountExpense = Integer.parseInt(scanner.nextLine());
+            if (finSystem.getListOfExpenseCategoriesSize() > 0) {
+                System.out.print("Enter the name of the expense category (or leave empty to skip): ");
+                String categoryName = scanner.nextLine().trim();
+                if (!categoryName.isEmpty()) {
+                    finSystem.addExpense(accountName, amountExpense, categoryName);
+                    return;
+                }
+            }
+            if (accountName.equals("General Bank Account")) {
+                finSystem.addExpense(amountExpense);
+            } else {
+                finSystem.addExpense(accountName, amountExpense);
             }
         } catch (IllegalArgumentException | IllegalStateException e) {
             System.out.println("Error: " + e.getMessage());
         }
     }
+
 
     private static void workWithAccounts() {
         System.out.println("\n4.1. Add bank account");
