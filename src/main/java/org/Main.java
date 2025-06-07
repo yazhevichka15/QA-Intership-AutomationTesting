@@ -40,7 +40,7 @@ public class Main {
         System.out.println("2. Add income record");
         System.out.println("3. Add expense record");
         System.out.println("4. Working with bank accounts");
-        System.out.println("5. Working with finance category of expense");
+        System.out.println("5. Working with expense categories");
         System.out.println("6. Show history of bank operations");
         System.out.println("0. Exit");
         System.out.print("Enter the item: ");
@@ -105,7 +105,7 @@ public class Main {
 
         switch (scanner.nextLine().trim()) {
             case "4.1" -> {
-                System.out.print("\nEnter a name for the new bank account: ");
+                System.out.print("\nEnter name for the new bank account: ");
                 try {
                     finSystem.addBankAccount(scanner.nextLine());
                 } catch (IllegalArgumentException e) {
@@ -134,7 +134,7 @@ public class Main {
 
         switch (scanner.nextLine().trim()) {
             case "5.1" -> {
-                System.out.print("\nEnter a name for new expense category: ");
+                System.out.print("\nEnter name for new expense category: ");
                 try {
                     finSystem.addExpenseCategory(scanner.nextLine());
                 } catch (IllegalArgumentException e) {
@@ -143,7 +143,7 @@ public class Main {
             }
             case "5.2" -> {
                 try {
-                    System.out.print("\nEnter a name of expense category: ");
+                    System.out.print("\nEnter name of expense category: ");
                     String categoryName = scanner.nextLine().trim();
                     System.out.print("Enter the amount of expense limit: ");
                     int limitAmount = Integer.parseInt(scanner.nextLine());
@@ -153,14 +153,14 @@ public class Main {
                 }
             }
             case "5.3" -> {
-                System.out.print("\nEnter a name expense category: ");
+                System.out.print("\nEnter name of expense category: ");
                 finSystem.clearAmountOfExpenseCategory(scanner.nextLine());
             }
             case "5.4" -> {
                 finSystem.showExpenditureStatistic();
             }
             case "5.5" -> {
-                System.out.print("\nEnter a name expense category for delete : ");
+                System.out.print("\nEnter the name of expense category for delete: ");
                 try {
                     finSystem.deleteExpenseCategory(scanner.nextLine());
                 } catch (IllegalArgumentException e) {

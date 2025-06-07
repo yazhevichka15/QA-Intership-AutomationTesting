@@ -19,14 +19,14 @@ public class BankAccount {
 
     public void increaseBalance(int amount) {
         if (amount <= 0) {
-            throw new IllegalArgumentException("Amount must be positive");
+            throw new IllegalArgumentException("Income amount must be positive");
         }
         accountBalance += amount;
     }
 
     public void reduceBalance(int amount) {
         if (amount <= 0) {
-            throw new IllegalArgumentException("Amount must be positive");
+            throw new IllegalArgumentException("Expense amount must be positive");
         }
         if (accountBalance < amount) {
             throw new IllegalStateException("Insufficient funds in the account");

@@ -19,10 +19,10 @@ public class ExpenseCategory {
 
     public void increaseExpense(int amount) {
         if (amount <= 0) {
-            throw new IllegalArgumentException("Amount must be positive");
+            throw new IllegalArgumentException("Expense amount must be positive");
         }
         if (limitAmountOfExpenses != -1 && (amountOfExpense + amount > limitAmountOfExpenses)) {
-            throw new IllegalArgumentException("Expense exceeds the set limit!");
+            throw new IllegalArgumentException("Expense amount exceeds the set limit");
         }
         amountOfExpense += amount;
     }
@@ -36,7 +36,7 @@ public class ExpenseCategory {
             throw new IllegalArgumentException("Limit amount must be positive");
         }
         if (limitAmountOfExpenses != -1) {
-            throw new IllegalStateException("A limit has already been set for this category");
+            throw new IllegalStateException("Limit already has been set for this category");
         }
         if (amountOfExpense > amount) {
             throw new IllegalStateException("Current expenses exceed the limit you're trying to set");

@@ -9,9 +9,9 @@ import java.util.Optional;
 public class FinanceTrackingSystem {
     private final BankAccount generalBankAccount;
     private final List<BankAccount> listOfBankAccounts;
+    private final List<ExpenseCategory> listOfExpenseCategories = new ArrayList<>();
     private final List<String> historyOfBankOperations = new ArrayList<>();
     private int historyId = 1;
-    private final List<ExpenseCategory> listOfExpenseCategories = new ArrayList<>();
 
     public FinanceTrackingSystem() {
         this.generalBankAccount = new BankAccount("General Bank Account");
@@ -33,11 +33,11 @@ public class FinanceTrackingSystem {
         addHistoryRecord("Income", income, generalBankAccount.getAccountName());
     }
 
-    public void addIncome(String nameAccount, int income) {
+    public void addIncome(String accountName, int income) {
         if (income <= 0) {
             throw new IllegalArgumentException("Income amount must be positive");
         }
-        BankAccount account = findAccount(nameAccount)
+        BankAccount account = findAccount(accountName)
                 .orElseThrow(() -> new IllegalArgumentException("Bank account not found"));
         account.increaseBalance(income);
         addHistoryRecord("Income", income, account.getAccountName());
@@ -51,24 +51,24 @@ public class FinanceTrackingSystem {
         addHistoryRecord("Expense", expense, generalBankAccount.getAccountName());
     }
 
-    public void addExpense(String nameAccount, int expense) {
+    public void addExpense(String accountName, int expense) {
         if (expense <= 0) {
             throw new IllegalArgumentException("Expense amount must be positive");
         }
-        BankAccount account = findAccount(nameAccount)
+        BankAccount account = findAccount(accountName)
                 .orElseThrow(() -> new IllegalArgumentException("Bank account not found"));
         account.reduceBalance(expense);
         addHistoryRecord("Expense", expense, account.getAccountName());
     }
 
-    public void addExpense(String nameAccount, int expense, String nameCategory) {
+    public void addExpense(String accountName, int expense, String categoryName) {
         if (expense <= 0) {
             throw new IllegalArgumentException("Expense amount must be positive");
         }
-        BankAccount account = findAccount(nameAccount)
+        BankAccount account = findAccount(accountName)
                 .orElseThrow(() -> new IllegalArgumentException("Bank account not found"));
-        ExpenseCategory category = findCategory(nameCategory)
-                .orElseThrow(() -> new IllegalArgumentException("Expense Category not found"));
+        ExpenseCategory category = findCategory(categoryName)
+                .orElseThrow(() -> new IllegalArgumentException("Expense category not found"));
         account.reduceBalance(expense);
         category.increaseExpense(expense);
         addHistoryRecord("Expense", expense, account.getAccountName());
@@ -83,13 +83,13 @@ public class FinanceTrackingSystem {
     }
 
     public void deleteBankAccount(String accountName) {
-        if (accountName.equals("General Bank Account"))
-            throw new IllegalArgumentException("You can't delete General Bank Account");
+        if (accountName.equals("General Bank Account")) {
+            throw new IllegalArgumentException("Can't delete General Bank Account");
+        }
         BankAccount account = findAccount(accountName)
                 .orElseThrow(() -> new IllegalArgumentException("Bank account not found"));
-        int accountBalance = account.getAccountBalance();
-        if (accountBalance > 0) {
-            generalBankAccount.increaseBalance(accountBalance);
+        if (account.getAccountBalance() > 0) {
+            generalBankAccount.increaseBalance(account.getAccountBalance());
         }
         listOfBankAccounts.remove(account);
     }
@@ -110,7 +110,7 @@ public class FinanceTrackingSystem {
 
     public void showBankHistory() {
         if (historyOfBankOperations.isEmpty()) {
-            System.out.println("No finance transactions have been added yet!");
+            System.out.println("\nNo finance transactions have been added yet");
             return;
         }
         int startIndex = Math.max(0, historyOfBankOperations.size() - 10);
@@ -154,7 +154,7 @@ public class FinanceTrackingSystem {
 
     public void showExpenditureStatistic() {
         if (listOfExpenseCategories.isEmpty()) {
-            System.out.println("No expense categories have been added yet!");
+            System.out.println("\nNo expense categories have been added yet");
             return;
         }
         for (ExpenseCategory category : listOfExpenseCategories) {
