@@ -11,6 +11,7 @@ public class FinanceTrackingSystem {
     private final List<BankAccount> listOfBankAccounts;
     private final List<String> historyOfBankOperations = new ArrayList<>();
     private int historyId = 1;
+    private final List<ExpenseCategory> listOfExpenseCategories = new ArrayList<>();
 
     public FinanceTrackingSystem() {
         this.generalBankAccount = new BankAccount("General Bank Account");
@@ -65,7 +66,22 @@ public class FinanceTrackingSystem {
         listOfBankAccounts.add(bankAccount);
     }
 
+    public void addExpense(String nameAccount, int expense, String nameCategory) {
+        if (expense <= 0) {
+            throw new IllegalArgumentException("Expense amount must be positive");
+        }
+        BankAccount account = findAccount(nameAccount)
+                .orElseThrow(() -> new IllegalArgumentException("Bank account not found"));
+        ExpenseCategory category = findCategory(nameCategory)
+                .orElseThrow(() -> new IllegalArgumentException("Expense Category not found"));
+        account.reduceBalance(expense);
+        category.increaseExpense(expense);
+        addHistoryRecord("Expense", expense, account.getAccountName());
+    }
+
     public void deleteBankAccount(String accountName) {
+        if (accountName.equals("General Bank Account"))
+            throw new IllegalArgumentException("You can't delete General Bank Account");
         BankAccount account = findAccount(accountName)
                 .orElseThrow(() -> new IllegalArgumentException("Bank account not found"));
         generalBankAccount.increaseBalance(account.getAccountBalance());
@@ -99,9 +115,59 @@ public class FinanceTrackingSystem {
         }
     }
 
+    public void addExpenseCategory(String categoryName) {
+        ExpenseCategory category = new ExpenseCategory(categoryName);
+        listOfExpenseCategories.add(category);
+    }
+
+    public void deleteExpenseCategory(String categoryName) {
+        if (listOfExpenseCategories.isEmpty()) {
+            throw new IllegalStateException("No expense categories have been added yet");
+        }
+        ExpenseCategory category = findCategory(categoryName)
+                .orElseThrow(() -> new IllegalArgumentException("Expense category not found"));
+        listOfExpenseCategories.remove(category);
+    }
+
+    public int getListOfExpenseCategoriesSize() {
+        return listOfExpenseCategories.size();
+    }
+
+    public void addLimitOfExpenseCategory(String categoryName, int limitAmount) {
+        ExpenseCategory category = findCategory(categoryName)
+                .orElseThrow(() -> new IllegalArgumentException("Expense category not found"));
+        category.setLimitAmountOfExpenses(limitAmount);
+    }
+
+    public void clearAmountOfExpenseCategory(String categoryName) {
+        ExpenseCategory category = findCategory(categoryName)
+                .orElseThrow(() -> new IllegalArgumentException("Expense category not found"));
+        category.clearAmountOfExpense();
+    }
+
+    public void showExpenditureStatistic() {
+        if (listOfExpenseCategories.isEmpty()) {
+            System.out.println("No expense categories have been added yet!");
+            return;
+        }
+        for (ExpenseCategory category : listOfExpenseCategories) {
+            System.out.printf(
+                    "%s: %d%n",
+                    category.getCategoryName(),
+                    category.getAmountOfExpense()
+            );
+        }
+    }
+
     private Optional<BankAccount> findAccount(String name) {
         return listOfBankAccounts.stream()
                 .filter(acc -> acc.getAccountName().equals(name))
+                .findFirst();
+    }
+
+    private Optional<ExpenseCategory> findCategory(String name) {
+        return listOfExpenseCategories.stream()
+                .filter(category -> category.getCategoryName().equals(name))
                 .findFirst();
     }
 

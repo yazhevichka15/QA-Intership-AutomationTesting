@@ -16,9 +16,11 @@ public class Main {
                 case "2" -> addIncomeRecord();
                 case "3" -> addExpenseRecord();
                 case "4" -> workWithAccounts();
-                case "5" -> showBankHistory();
+                case "5" -> workWithFinanceCategories();
+                case "6" -> showBankHistory();
                 case "0" -> {
                     System.out.println("Bye!");
+                    scanner.close();
                     return;
                 }
                 default -> System.out.println("Incorrect command selected! Try again");
@@ -37,7 +39,8 @@ public class Main {
         System.out.println("2. Add income record");
         System.out.println("3. Add expense record");
         System.out.println("4. Working with bank accounts");
-        System.out.println("5. Show history of bank operations");
+        System.out.println("5. Working with finance category of expense");
+        System.out.println("6. Show history of bank operations");
         System.out.println("0. Exit");
         System.out.print("Enter the item: ");
     }
@@ -66,12 +69,26 @@ public class Main {
             System.out.print("\nEnter the amount of expense: ");
             int amountExpense = Integer.parseInt(scanner.nextLine());
             finSystem.addExpense(amountExpense);
-        } else {
+        } else if (finSystem.getListOfBankAccountsSize() == 1 && finSystem.getListOfExpenseCategoriesSize() != 0) {
+            System.out.print("Enter the amount of expense: ");
+            int amountExpense = Integer.parseInt(scanner.nextLine());
+            System.out.print("Enter the name of the expense category: ");
+            String nameExpenseCategory = scanner.nextLine().trim();
+            finSystem.addExpense("General Bank Account", amountExpense, nameExpenseCategory);
+        } else if (finSystem.getListOfExpenseCategoriesSize() == 0) {
             System.out.print("\nEnter the name of the expense account: ");
             String nameExpenseAccount = scanner.nextLine().trim();
             System.out.print("Enter the amount of expense: ");
             int amountExpense = Integer.parseInt(scanner.nextLine());
             finSystem.addExpense(nameExpenseAccount, amountExpense);
+        } else {
+            System.out.print("\nEnter the name of the expense account: ");
+            String nameExpenseAccount = scanner.nextLine().trim();
+            System.out.print("Enter the amount of expense: ");
+            int amountExpense = Integer.parseInt(scanner.nextLine());
+            System.out.print("Enter the name of the expense category: ");
+            String nameExpenseCategory = scanner.nextLine().trim();
+            finSystem.addExpense(nameExpenseAccount, amountExpense, nameExpenseCategory);
         }
     }
 
@@ -88,6 +105,41 @@ public class Main {
             case "4.2" -> {
                 System.out.print("\nEnter the name of the bank account to be deleted: ");
                 finSystem.deleteBankAccount(scanner.nextLine());
+            }
+            default -> System.out.println("Incorrect command selected! Try again");
+        }
+    }
+
+    private static void workWithFinanceCategories() {
+        System.out.println("\n5.1. Add expense category");
+        System.out.println("5.2. Add a limit for expense category");
+        System.out.println("5.3. Clear the current amount in the category");
+        System.out.println("5.4. Show statistic on expenditure");
+        System.out.println("5.5. Delete expense category");
+        System.out.print("Enter the item: ");
+
+        switch (scanner.nextLine().trim()) {
+            case "5.1" -> {
+                System.out.print("\nEnter a name for new expense category: ");
+                finSystem.addExpenseCategory(scanner.nextLine());
+            }
+            case "5.2" -> {
+                System.out.print("\nEnter a name of expense category: ");
+                String categoryName = scanner.nextLine().trim();
+                System.out.print("Enter the amount of expense limit: ");
+                int limitAmount = Integer.parseInt(scanner.nextLine());
+                finSystem.addLimitOfExpenseCategory(categoryName, limitAmount);
+            }
+            case "5.3" -> {
+                System.out.print("\nEnter a name expense category: ");
+                finSystem.clearAmountOfExpenseCategory(scanner.nextLine());
+            }
+            case "5.4" -> {
+                finSystem.showExpenditureStatistic();
+            }
+            case "5.5" -> {
+                System.out.print("\nEnter a name expense category for delete : ");
+                finSystem.deleteExpenseCategory(scanner.nextLine());
             }
             default -> System.out.println("Incorrect command selected! Try again");
         }
