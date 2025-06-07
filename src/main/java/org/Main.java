@@ -98,7 +98,6 @@ public class Main {
         }
     }
 
-
     private static void workWithAccounts() {
         System.out.println("\n4.1. Add bank account");
         System.out.println("4.2. Delete bank account");
@@ -107,7 +106,11 @@ public class Main {
         switch (scanner.nextLine().trim()) {
             case "4.1" -> {
                 System.out.print("\nEnter a name for the new bank account: ");
-                finSystem.addBankAccount(scanner.nextLine());
+                try {
+                    finSystem.addBankAccount(scanner.nextLine());
+                } catch (IllegalArgumentException e) {
+                    System.out.println("Error: " + e.getMessage());
+                }
             }
             case "4.2" -> {
                 System.out.print("\nEnter the name of the bank account to be deleted: ");
@@ -132,7 +135,11 @@ public class Main {
         switch (scanner.nextLine().trim()) {
             case "5.1" -> {
                 System.out.print("\nEnter a name for new expense category: ");
-                finSystem.addExpenseCategory(scanner.nextLine());
+                try {
+                    finSystem.addExpenseCategory(scanner.nextLine());
+                } catch (IllegalArgumentException e) {
+                    System.out.println("Error: " + e.getMessage());
+                }
             }
             case "5.2" -> {
                 try {

@@ -75,6 +75,9 @@ public class FinanceTrackingSystem {
     }
 
     public void addBankAccount(String accountName) {
+        if (findAccount(accountName).isPresent()) {
+            throw new IllegalArgumentException("Bank account with this name already exists");
+        }
         BankAccount bankAccount = new BankAccount(accountName);
         listOfBankAccounts.add(bankAccount);
     }
@@ -116,6 +119,9 @@ public class FinanceTrackingSystem {
     }
 
     public void addExpenseCategory(String categoryName) {
+        if (findCategory(categoryName).isPresent()) {
+            throw new IllegalArgumentException("Expense category with this name already exists");
+        }
         ExpenseCategory category = new ExpenseCategory(categoryName);
         listOfExpenseCategories.add(category);
     }
