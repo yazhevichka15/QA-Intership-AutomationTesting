@@ -87,9 +87,10 @@ public class FinanceTrackingSystem {
             throw new IllegalArgumentException("You can't delete General Bank Account");
         BankAccount account = findAccount(accountName)
                 .orElseThrow(() -> new IllegalArgumentException("Bank account not found"));
-        generalBankAccount.increaseBalance(account.getAccountBalance());
-        addHistoryRecord("Income", account.getAccountBalance(),
-                generalBankAccount.getAccountName() + " (" + account.getAccountName() + " deleted)");
+        int accountBalance = account.getAccountBalance();
+        if (accountBalance > 0) {
+            generalBankAccount.increaseBalance(accountBalance);
+        }
         listOfBankAccounts.remove(account);
     }
 
