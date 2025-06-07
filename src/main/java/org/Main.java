@@ -1,6 +1,7 @@
 package org;
 
 import FinanceSystem.FinanceTrackingSystem;
+
 import java.util.Scanner;
 
 public class Main {
@@ -51,44 +52,54 @@ public class Main {
     }
 
     private static void addIncomeRecord() {
-        if (finSystem.getListOfBankAccountsSize() == 1) {
-            System.out.print("\nEnter the income amount: ");
-            int amountIncome = Integer.parseInt(scanner.nextLine());
-            finSystem.addIncome(amountIncome);
-        } else {
-            System.out.print("\nEnter the name of the income account: ");
-            String nameIncomeAccount = scanner.nextLine().trim();
-            System.out.print("Enter the amount of income: ");
-            int amountIncome = Integer.parseInt(scanner.nextLine());
-            finSystem.addIncome(nameIncomeAccount, amountIncome);
+        try {
+            if (finSystem.getListOfBankAccountsSize() == 1) {
+                System.out.print("\nEnter the income amount: ");
+                int amountIncome = Integer.parseInt(scanner.nextLine());
+                finSystem.addIncome(amountIncome);
+            } else {
+                System.out.print("\nEnter the name of the income account: ");
+                String nameIncomeAccount = scanner.nextLine().trim();
+                System.out.print("Enter the amount of income: ");
+                int amountIncome = Integer.parseInt(scanner.nextLine());
+                finSystem.addIncome(nameIncomeAccount, amountIncome);
+            }
+        } catch (IllegalArgumentException e) {
+            System.out.println("Error: " + e.getMessage());
         }
     }
 
     private static void addExpenseRecord() {
-        if (finSystem.getListOfBankAccountsSize() == 1) {
-            System.out.print("\nEnter the amount of expense: ");
-            int amountExpense = Integer.parseInt(scanner.nextLine());
-            finSystem.addExpense(amountExpense);
-        } else if (finSystem.getListOfBankAccountsSize() == 1 && finSystem.getListOfExpenseCategoriesSize() != 0) {
-            System.out.print("Enter the amount of expense: ");
-            int amountExpense = Integer.parseInt(scanner.nextLine());
-            System.out.print("Enter the name of the expense category: ");
-            String nameExpenseCategory = scanner.nextLine().trim();
-            finSystem.addExpense("General Bank Account", amountExpense, nameExpenseCategory);
-        } else if (finSystem.getListOfExpenseCategoriesSize() == 0) {
-            System.out.print("\nEnter the name of the expense account: ");
-            String nameExpenseAccount = scanner.nextLine().trim();
-            System.out.print("Enter the amount of expense: ");
-            int amountExpense = Integer.parseInt(scanner.nextLine());
-            finSystem.addExpense(nameExpenseAccount, amountExpense);
-        } else {
-            System.out.print("\nEnter the name of the expense account: ");
-            String nameExpenseAccount = scanner.nextLine().trim();
-            System.out.print("Enter the amount of expense: ");
-            int amountExpense = Integer.parseInt(scanner.nextLine());
-            System.out.print("Enter the name of the expense category: ");
-            String nameExpenseCategory = scanner.nextLine().trim();
-            finSystem.addExpense(nameExpenseAccount, amountExpense, nameExpenseCategory);
+        try {
+            if (finSystem.getListOfBankAccountsSize() == 1) {
+                if (finSystem.getListOfExpenseCategoriesSize() != 0) {
+                    System.out.print("\nEnter the amount of expense: ");
+                    int amountExpense = Integer.parseInt(scanner.nextLine());
+                    System.out.print("Enter the name of the expense category: ");
+                    String nameExpenseCategory = scanner.nextLine().trim();
+                    finSystem.addExpense("General Bank Account", amountExpense, nameExpenseCategory);
+                    return;
+                }
+                System.out.print("\nEnter the amount of expense: ");
+                int amountExpense = Integer.parseInt(scanner.nextLine());
+                finSystem.addExpense(amountExpense);
+            } else if (finSystem.getListOfExpenseCategoriesSize() == 0) {
+                System.out.print("\nEnter the name of the expense account: ");
+                String nameExpenseAccount = scanner.nextLine().trim();
+                System.out.print("Enter the amount of expense: ");
+                int amountExpense = Integer.parseInt(scanner.nextLine());
+                finSystem.addExpense(nameExpenseAccount, amountExpense);
+            } else {
+                System.out.print("\nEnter the name of the expense account: ");
+                String nameExpenseAccount = scanner.nextLine().trim();
+                System.out.print("Enter the amount of expense: ");
+                int amountExpense = Integer.parseInt(scanner.nextLine());
+                System.out.print("Enter the name of the expense category: ");
+                String nameExpenseCategory = scanner.nextLine().trim();
+                finSystem.addExpense(nameExpenseAccount, amountExpense, nameExpenseCategory);
+            }
+        } catch (IllegalArgumentException | IllegalStateException e) {
+            System.out.println("Error: " + e.getMessage());
         }
     }
 
@@ -104,7 +115,11 @@ public class Main {
             }
             case "4.2" -> {
                 System.out.print("\nEnter the name of the bank account to be deleted: ");
-                finSystem.deleteBankAccount(scanner.nextLine());
+                try {
+                    finSystem.deleteBankAccount(scanner.nextLine());
+                } catch (IllegalArgumentException e) {
+                    System.out.println("Error: " + e.getMessage());
+                }
             }
             default -> System.out.println("Incorrect command selected! Try again");
         }
@@ -124,11 +139,15 @@ public class Main {
                 finSystem.addExpenseCategory(scanner.nextLine());
             }
             case "5.2" -> {
-                System.out.print("\nEnter a name of expense category: ");
-                String categoryName = scanner.nextLine().trim();
-                System.out.print("Enter the amount of expense limit: ");
-                int limitAmount = Integer.parseInt(scanner.nextLine());
-                finSystem.addLimitOfExpenseCategory(categoryName, limitAmount);
+                try {
+                    System.out.print("\nEnter a name of expense category: ");
+                    String categoryName = scanner.nextLine().trim();
+                    System.out.print("Enter the amount of expense limit: ");
+                    int limitAmount = Integer.parseInt(scanner.nextLine());
+                    finSystem.addLimitOfExpenseCategory(categoryName, limitAmount);
+                } catch (IllegalArgumentException e) {
+                    System.out.println("Error: " + e.getMessage());
+                }
             }
             case "5.3" -> {
                 System.out.print("\nEnter a name expense category: ");
@@ -139,7 +158,11 @@ public class Main {
             }
             case "5.5" -> {
                 System.out.print("\nEnter a name expense category for delete : ");
-                finSystem.deleteExpenseCategory(scanner.nextLine());
+                try {
+                    finSystem.deleteExpenseCategory(scanner.nextLine());
+                } catch (IllegalArgumentException e) {
+                    System.out.println("Error: " + e.getMessage());
+                }
             }
             default -> System.out.println("Incorrect command selected! Try again");
         }

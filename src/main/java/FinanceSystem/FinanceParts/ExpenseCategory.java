@@ -43,8 +43,4 @@ public class ExpenseCategory {
         }
         this.limitAmountOfExpenses = amount;
     }
-
-    public int getLimitAmountOfExpenses() {
-        return limitAmountOfExpenses;
-    }
 }

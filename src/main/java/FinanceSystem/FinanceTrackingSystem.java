@@ -61,11 +61,6 @@ public class FinanceTrackingSystem {
         addHistoryRecord("Expense", expense, account.getAccountName());
     }
 
-    public void addBankAccount(String accountName) {
-        BankAccount bankAccount = new BankAccount(accountName);
-        listOfBankAccounts.add(bankAccount);
-    }
-
     public void addExpense(String nameAccount, int expense, String nameCategory) {
         if (expense <= 0) {
             throw new IllegalArgumentException("Expense amount must be positive");
@@ -77,6 +72,11 @@ public class FinanceTrackingSystem {
         account.reduceBalance(expense);
         category.increaseExpense(expense);
         addHistoryRecord("Expense", expense, account.getAccountName());
+    }
+
+    public void addBankAccount(String accountName) {
+        BankAccount bankAccount = new BankAccount(accountName);
+        listOfBankAccounts.add(bankAccount);
     }
 
     public void deleteBankAccount(String accountName) {
