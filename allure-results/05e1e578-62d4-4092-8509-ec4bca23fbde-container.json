@@ -1,0 +1,1 @@
+{"uuid":"05e1e578-62d4-4092-8509-ec4bca23fbde","name":"Deleting a bank account should remove it from the list of available accounts and transfer the balance","children":["4465c5a6-3771-4422-a11f-1737e7c5cd5e"],"befores":[],"afters":[],"start":1749375277159,"stop":1749375277167}

@@ -1,0 +1,1 @@
+{"uuid":"87aa63ae-4035-4f7d-bb1e-93ef12ff0f92","name":"Adding expenses to a category should reduce the current balance and increase the amount in the category","children":["baa5bd31-5d8d-4012-8b62-2f123ddb83c6"],"befores":[],"afters":[],"start":1749375655136,"stop":1749375655143}

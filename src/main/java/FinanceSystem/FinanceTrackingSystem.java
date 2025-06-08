@@ -125,6 +125,11 @@ public class FinanceTrackingSystem {
         }
     }
 
+    public List<String> getBankHistory() {
+        int startIndex = Math.max(0, historyOfBankOperations.size() - 10);
+        return historyOfBankOperations.subList(startIndex, historyOfBankOperations.size());
+    }
+
     public void showBankHistory() {
         if (historyOfBankOperations.isEmpty()) {
             System.out.println("\nNo finance transactions have been added yet");
