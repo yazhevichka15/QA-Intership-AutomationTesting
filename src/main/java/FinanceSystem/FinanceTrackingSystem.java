@@ -47,6 +47,9 @@ public class FinanceTrackingSystem {
         if (expense <= 0) {
             throw new IllegalArgumentException("Expense amount must be positive");
         }
+        if (expense > generalBankAccount.getAccountBalance()) {
+            throw new IllegalArgumentException("Amount of the expense can't be greater than the current balance");
+        }
         generalBankAccount.reduceBalance(expense);
         addHistoryRecord("Expense", expense, generalBankAccount.getAccountName());
     }
@@ -57,6 +60,9 @@ public class FinanceTrackingSystem {
         }
         BankAccount account = findAccount(accountName)
                 .orElseThrow(() -> new IllegalArgumentException("Bank account not found"));
+        if (expense > account.getAccountBalance()) {
+            throw new IllegalArgumentException("Amount of the expense can't be greater than the current balance");
+        }
         account.reduceBalance(expense);
         addHistoryRecord("Expense", expense, account.getAccountName());
     }
@@ -69,6 +75,9 @@ public class FinanceTrackingSystem {
                 .orElseThrow(() -> new IllegalArgumentException("Bank account not found"));
         ExpenseCategory category = findCategory(categoryName)
                 .orElseThrow(() -> new IllegalArgumentException("Expense category not found"));
+        if (expense > account.getAccountBalance()) {
+            throw new IllegalArgumentException("Amount of the expense can't be greater than the current balance");
+        }
         account.reduceBalance(expense);
         category.increaseExpense(expense);
         addHistoryRecord("Expense", expense, account.getAccountName());
@@ -146,6 +155,12 @@ public class FinanceTrackingSystem {
 
     public int getListOfExpenseCategoriesSize() {
         return listOfExpenseCategories.size();
+    }
+
+    public int getExpenseAmountOfCategory(String categoryName) {
+        ExpenseCategory category = findCategory(categoryName)
+                .orElseThrow(() -> new IllegalArgumentException("Category not found"));
+        return category.getAmountOfExpense();
     }
 
     public void addLimitOfExpenseCategory(String categoryName, int limitAmount) {
