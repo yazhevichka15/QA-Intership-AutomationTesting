@@ -98,6 +98,14 @@ public class FinanceTrackingSystem {
         return listOfBankAccounts.size();
     }
 
+    public int getBalanceOfBankAccount(String accountName) {
+        return listOfBankAccounts.stream()
+                .filter(acc -> acc.getAccountName().equals(accountName))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("Account not found"))
+                .getAccountBalance();
+    }
+
     public void showBankAccounts() {
         for (BankAccount account : listOfBankAccounts) {
             System.out.printf(
