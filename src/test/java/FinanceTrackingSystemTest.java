@@ -1,7 +1,5 @@
 import FinanceSystem.*;
 
-import java.util.List;
-
 import io.qameta.allure.Step;
 import org.junit.jupiter.api.*;
 
@@ -129,22 +127,60 @@ class FinanceTrackingSystemTest {
                 () -> addExpense(101)
         );
     }
-//
-//    @Test
-//    @DisplayName("")
-//    void testAddBankAccount() {}
-//
-//    @Test
-//    @DisplayName("")
-//    void testAddDuplicateBankAccount() {}
-//
-//    @Test
-//    @DisplayName("")
-//    void testDeleteBankAccount() {}
-//
-//    @Test
-//    @DisplayName("")
-//    void testDeleteGeneralBankAccount() {}
+
+    @Test
+    @DisplayName("Adding an bank account should add it to the list with available accounts")
+    void testAddBankAccount() {
+        addBankAccount("Saving");
+
+        assertThat("The number of available accounts should increase",
+                getCountBankAccounts(), is(2));
+    }
+
+    @Test
+    @DisplayName("Should throw when trying to create an existing account")
+    void testAddDuplicateBankAccount() {
+        addBankAccount("Saving");
+
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> addBankAccount("Saving")
+        );
+    }
+
+    @Test
+    @DisplayName("Deleting a bank account should remove it from the list of available accounts")
+    void testDeleteBankAccount() {
+        addBankAccount("Saving");
+        deleteBankAccount("Saving");
+
+        assertThat("The number of available accounts should reduce",
+                getCountBankAccounts(), is(1));
+    }
+
+    @Test
+    @DisplayName("Deleting a bank account should remove it from the list of available accounts and transfer the balance to General Bank Account")
+    void testDeleteBankAccountWithBalance() {
+        addBankAccount("Saving");
+        addIncome("Saving", 1000);
+        deleteBankAccount("Saving");
+
+        assertThat("The number of available accounts should reduce",
+                getCountBankAccounts(), is(1));
+        assertThat("The balance of the General Bank Account should increase by the amount of the deleted account",
+                getAccountBalance("General Bank Account"), is(1000));
+        assertThat("The current balance should not change",
+                getCurrentBalance(), is(1000));
+    }
+
+    @Test
+    @DisplayName("Should throw when deleting General Bank Account")
+    void testDeleteGeneralBankAccount() {
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> deleteBankAccount("General Bank Account")
+        );
+    }
 //
 //    @Test
 //    @DisplayName("")
@@ -213,6 +249,11 @@ class FinanceTrackingSystemTest {
         finSystem.addBankAccount(accountName);
     }
 
+    @Step("Delete bank account {accountName}")
+    private void deleteBankAccount(String accountName) {
+        finSystem.deleteBankAccount(accountName);
+    }
+
     @Step("Add expense category {categoryName}")
     private void addCategory(String categoryName) {
         finSystem.addExpenseCategory(categoryName);
@@ -226,6 +267,11 @@ class FinanceTrackingSystemTest {
     @Step("Add limit to expense category {categoryName} amount of limit {limit}")
     private void addLimitOfCategory(String categoryName, int limit) {
         finSystem.addLimitOfExpenseCategory(categoryName, limit);
+    }
+
+    @Step("Gets the current number of available bank accounts")
+    private int getCountBankAccounts() {
+        return finSystem.getListOfBankAccountsSize();
     }
 
 }
