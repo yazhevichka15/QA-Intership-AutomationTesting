@@ -7,8 +7,9 @@ import java.util.Properties;
 public class ConfigLoader {
     private static Properties properties;
 
-    static {
+    public static String get(String key) {
         properties = new Properties();
+
         try (InputStream input = ConfigLoader.class.getClassLoader().getResourceAsStream("config.properties")) {
             if (input == null) {
                 throw new RuntimeException("config.properties not found");
@@ -17,9 +18,7 @@ public class ConfigLoader {
         } catch (IOException e) {
             throw new RuntimeException("Failed to load config.properties", e);
         }
-    }
 
-    public static String get(String key) {
         return properties.getProperty(key);
     }
 }
