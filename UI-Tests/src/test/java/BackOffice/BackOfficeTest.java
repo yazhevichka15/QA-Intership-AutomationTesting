@@ -29,7 +29,7 @@ public class BackOfficeTest {
     private BackOfficePage backOfficePage;
 
     @BeforeEach
-    @Step("")
+    @Step("Initialize WebDriver, pages and set start settings before each test")
     void setUp() {
         ChromeOptions options = new ChromeOptions();
         options.addArguments("force-device-scale-factor=1");
@@ -48,38 +48,38 @@ public class BackOfficeTest {
     }
 
     @AfterEach
-    @Step("")
+    @Step("Сlose all browser tabs after each test")
     void tearDown() {
         driver.quit();
     }
 
     @Test
-    @DisplayName("")
+    @DisplayName("Adding a language should add it to the Language Customization")
     void testAddLanguage() {
         addTestLanguage();
 
-        assertThat("",
+        assertThat("Success message should be displayed",
                 isSuccessMessageDisplayed(), is(true));
 
-        assertThat("",
+        assertThat("Language to be added should be displayed",
                 isLanguageDisplayed(), is(true));
     }
 
     @Test
-    @DisplayName("")
+    @DisplayName("Deleting the language should hide it from the Language Customization")
     void testDeleteLanguage() {
         addTestLanguage();
         deleteTestLanguage();
 
-        assertThat("",
+        assertThat("Success message should be displayed",
                 isSuccessMessageDisplayed(), is(true));
 
-        assertThat("",
+        assertThat("Language to be deleted should be hidden",
                 isLanguageDisplayed(), is(false));
     }
 
     @Test
-    @DisplayName("")
+    @DisplayName("Adding an event should add it to the language's events")
     void testAddEventUsingHighlightManager() {
         addTestLanguage();
         addTestSport();
@@ -87,12 +87,12 @@ public class BackOfficeTest {
         addTestSportEvent();
         backOfficePage.clickSaveConfigBtn();
 
-        assertThat("",
+        assertThat("Event to be added should be displayed",
                 isSportEventDisplayed(), is(true));
     }
 
     @Test
-    @DisplayName("")
+    @DisplayName("Copying event from default language's events should add it to the selected language's events")
     void testAddEventUsingCopyEventsBtn() {
         addTestSport();
         addTestSportEventToDefault();
@@ -101,12 +101,12 @@ public class BackOfficeTest {
         backOfficePage.clickCopyEventsBtn();
         backOfficePage.clickSaveConfigBtn();
 
-        assertThat("",
+        assertThat("Event to be added should be displayed",
                 isSportEventDisplayed(), is(true));
     }
 
     @Test
-    @DisplayName("")
+    @DisplayName("Deleting the event should hide it from the language's events")
     void testDeleteEventUsingHighlightsManager() {
         addTestLanguage();
         addTestSport();
@@ -115,22 +115,22 @@ public class BackOfficeTest {
         backOfficePage.clickDeleteEventBtn();
         backOfficePage.clickSaveConfigBtn();
 
-        assertThat("",
+        assertThat("Event to be deleted should be hidden",
                 isSportEventNotDisplayed(), is(true));
     }
 
     @Test
-    @DisplayName("")
+    @DisplayName("Adding a sport should add it to the available sports")
     void testAddSport() {
         addTestSport();
         backOfficePage.clickSaveConfigBtn();
 
-        assertThat("",
+        assertThat("Sport to be added should be displayed",
                 isSportDisplayed(), is(true));
     }
 
     @Test
-    @DisplayName("")
+    @DisplayName("Deleting the sport should hide it from the available sports")
     void testDeleteSport() {
         addTestSport();
 
@@ -138,24 +138,23 @@ public class BackOfficeTest {
         backOfficePage.clickDeleteSportBtn();
         backOfficePage.clickSaveConfigBtn();
 
-        assertThat("",
+        assertThat("Sport to be deleted should be hidden",
                 isSportDisplayed(), is(false));
     }
 
     @Test
-    @DisplayName("")
-    void testAddSportSearchingString() throws InterruptedException {
+    @DisplayName("Entering a language into the search string should display an item with that language")
+    void testAddSportSearchingString() {
         backOfficePage.clickEditLanguageBtn();
         backOfficePage.clickAddLanguageBtn();
         backOfficePage.enterTextIntoSearchLanguageString("norwegian");
         backOfficePage.clickSearchLanguageBtn();
 
-        assertThat("",
+        assertThat("Item with the language to be entered should be displayed",
                 backOfficePage.getNameOfSearchLanguage(), equalTo("Norwegian"));
     }
 
-
-    @Step("")
+    @Step("Log in Highlights Manager using username and password from configuration")
     private void logInSystem() {
         String username = ConfigLoader.get("username");
         String password = ConfigLoader.get("password");
@@ -166,14 +165,14 @@ public class BackOfficeTest {
         logInPage.clickLoginBtn();
     }
 
-    @Step("")
+    @Step("Select and go to the test configuration")
     private void goToConfigQA() {
         backOfficePage.clickSkinManagement();
         backOfficePage.clickHighlightsManager();
         backOfficePage.chooseConfigQA();
     }
 
-    @Step("")
+    @Step("Add the first language to Language Customization")
     private void addTestLanguage() {
         backOfficePage.clickEditLanguageBtn();
         backOfficePage.clickAddLanguageBtn();
@@ -184,7 +183,7 @@ public class BackOfficeTest {
         backOfficePage.clickLanguageBtn();
     }
 
-    @Step("")
+    @Step("Delete the language from Language Customization")
     private void deleteTestLanguage() {
         backOfficePage.clickEditLanguageBtn();
         backOfficePage.clickDeleteLanguageBtn();
@@ -194,16 +193,14 @@ public class BackOfficeTest {
         backOfficePage.clickSaveConfigBtn();
     }
 
-    @Step("")
+    @Step("Add a sport to available sports")
     private void addTestSport() {
         backOfficePage.clickAddSportMenu();
         backOfficePage.chooseSport();
         backOfficePage.clickAddSportMenuApplyBtn();
     }
 
-
-
-    @Step("")
+    @Step("Add a first sport event from sport")
     private void addTestSportEvent() {
         backOfficePage.clickSport();
         backOfficePage.clickSportCountry();
@@ -211,13 +208,13 @@ public class BackOfficeTest {
         backOfficePage.clickAddSportEvent();
     }
 
-    @Step("")
+    @Step("Add a first sport event from sport to default language")
     private void addTestSportEventToDefault() {
         backOfficePage.clickDefaultBtn();
         addTestSportEvent();
     }
 
-    @Step("")
+    @Step("Check the language's displaying in the Language Customization")
     private boolean isLanguageDisplayed() {
         try {
             return wait
@@ -228,7 +225,7 @@ public class BackOfficeTest {
         }
     }
 
-    @Step("")
+    @Step("Check the success message's displaying in the top right corner")
     private boolean isSuccessMessageDisplayed() {
         try {
             return wait
@@ -239,7 +236,7 @@ public class BackOfficeTest {
         }
     }
 
-    @Step("")
+    @Step("Check the sport's displaying in the available sports")
     private boolean isSportDisplayed() {
         try {
             return wait
@@ -250,7 +247,7 @@ public class BackOfficeTest {
         }
     }
 
-    @Step("")
+    @Step("Check the sport event's displaying in the language's events")
     private boolean isSportEventDisplayed() {
         try {
             return wait
@@ -261,7 +258,7 @@ public class BackOfficeTest {
         }
     }
 
-    @Step("")
+    @Step("Check the disappearance of a sport event from the language events")
     private boolean isSportEventNotDisplayed() {
         try {
             return wait.until(ExpectedConditions.invisibilityOfElementLocated(backOfficePage.getSportEvent()));
