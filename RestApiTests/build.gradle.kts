@@ -16,11 +16,13 @@ java {
 }
 
 dependencies {
+    implementation("io.rest-assured:kotlin-extensions:5.5.5")
+    implementation("org.projectlombok:lombok:1.18.22")
+    implementation("com.fasterxml.jackson.core:jackson-annotations:2.17.0")
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.17.0")
+
     testImplementation(platform("org.junit:junit-bom:5.10.0"))
     testImplementation("org.junit.jupiter:junit-jupiter")
-    testImplementation("io.rest-assured:rest-assured:5.4.0")
-    testImplementation("org.projectlombok:lombok:1.18.22")
-    testImplementation("com.fasterxml.jackson.core:jackson-databind:2.15.0")
     testImplementation("io.qameta.allure:allure-junit5:2.25.0")
 }
 
