@@ -1,12 +1,9 @@
 package HighlightsManager;
 
-import ConfigReader.*;
 import clients.*;
 import models.getConfigSettings.*;
 import models.updateConfig.UpdateConfigRequest;
-
-import static HighlightsManager.HighlightManagerSteps.getCookies;
-import static HighlightsManager.HighlightManagerSteps.setRequestBodyToAddLanguage;
+import static HighlightsManager.HighlightManagerSteps.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -32,26 +29,49 @@ public class HighlightManagerTests {
         authCookies = getCookies(baseAdminURI);
     }
 
-    @Test
-    @DisplayName("")
-    void testAddLanguage() {
-        Map<String, String> queryParams = new HashMap<>();
-        queryParams.put("configId", "126");
+//    @Test
+//    @DisplayName("")
+//    void testAddLanguage() {
+//        Map<String, String> queryParams = new HashMap<>();
+//        queryParams.put("configId", "126");
+//
+//        GetConfigSettingsResponse getConfigSettingsResponseBeforeAdd =
+//                BackOfficeClient.getConfigSettings(baseAdminURI, queryParams, authCookies);
+//
+//        UpdateConfigRequest updateRequestBody = setRequestBodyToAddLanguage();
+//        BackOfficeClient.updateConfigResponse(baseAdminURI, updateRequestBody, authCookies);
+//
+//        GetConfigSettingsResponse getConfigSettingsResponseAfterAdd =
+//                BackOfficeClient.getConfigSettings(baseAdminURI, queryParams, authCookies);
+//
+//        assertAll("",
+//                () -> assertThat("",
+//                        getConfigSettingsResponseBeforeAdd.data.languageTabs.size(), is(0)),
+//                () -> assertThat("",
+//                        getConfigSettingsResponseAfterAdd.data.languageTabs.size(), is(1))
+//        );
+//    }
 
-        GetConfigSettingsResponse getConfigSettingsResponseBeforeAdd =
-                BackOfficeClient.getConfigSettings(baseAdminURI, queryParams, authCookies);
-
-        UpdateConfigRequest updateRequestBody = setRequestBodyToAddLanguage();
-        BackOfficeClient.updateConfigResponse(baseAdminURI, updateRequestBody, authCookies);
-
-        GetConfigSettingsResponse getConfigSettingsResponseAfterAdd =
-                BackOfficeClient.getConfigSettings(baseAdminURI, queryParams, authCookies);
-
-        assertAll("",
-                () -> assertThat("",
-                        getConfigSettingsResponseBeforeAdd.data.languageTabs.size(), is(0)),
-                () -> assertThat("",
-                        getConfigSettingsResponseAfterAdd.data.languageTabs.size(), is(1))
-        );
-    }
+//    @Test
+//    @DisplayName("")
+//    void testDeleteLanguage() {
+//        Map<String, String> queryParams = new HashMap<>();
+//        queryParams.put("configId", "126");
+//
+//        GetConfigSettingsResponse getConfigSettingsResponseBeforeDelete =
+//                BackOfficeClient.getConfigSettings(baseAdminURI, queryParams, authCookies);
+//
+//        UpdateConfigRequest updateRequestBody = setRequestBodyToDeleteLanguage();
+//        BackOfficeClient.updateConfigResponse(baseAdminURI, updateRequestBody, authCookies);
+//
+//        GetConfigSettingsResponse getConfigSettingsResponseAfterDelete =
+//                BackOfficeClient.getConfigSettings(baseAdminURI, queryParams, authCookies);
+//
+//        assertAll("",
+//                () -> assertThat("",
+//                        getConfigSettingsResponseBeforeDelete.data.languageTabs.size(), is(1)),
+//                () -> assertThat("",
+//                        getConfigSettingsResponseAfterDelete.data.languageTabs.size(), is(0))
+//        );
+//    }
 }

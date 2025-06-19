@@ -53,4 +53,25 @@ public class HighlightManagerSteps {
 
         return requestBody;
     }
+
+    @Step("")
+    public static UpdateConfigRequest setRequestBodyToDeleteLanguage() {
+        UpdateConfigRequest requestBody = new UpdateConfigRequest();
+        requestBody.configId = 126;
+
+        requestBody.highlightsEvents = new ArrayList<>();
+        requestBody.languageTabs = new ArrayList<>();
+        requestBody.sports = new ArrayList<>();
+
+        Sport sport0 = new Sport();
+        sport0.sportId = 99;
+        sport0.order = 1;
+        sport0.name = "Archery";
+        sport0.isEnabled = true;
+        sport0.categories = new ArrayList<>();
+        sport0.count = 0;
+        requestBody.sports.add(sport0);
+
+        return requestBody;
+    }
 }
