@@ -1,4 +1,4 @@
-package models.updateConfig;
+package models.UpdateConfig;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
@@ -7,10 +7,13 @@ import lombok.Data;
 public class HighlightsEvent {
     @JsonProperty("EventId")
     public int eventId;
+
     @JsonProperty("Order")
     public int order;
+
     @JsonProperty("IsPromo")
     public boolean isPromo;
+
     @JsonProperty("IsSafe")
     public boolean isSafe;
 }

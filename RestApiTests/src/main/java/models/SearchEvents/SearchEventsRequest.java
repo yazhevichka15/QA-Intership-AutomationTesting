@@ -1,4 +1,4 @@
-package models.searchEvents;
+package models.SearchEvents;
 
 import lombok.Data;
 

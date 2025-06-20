@@ -1,16 +1,16 @@
-package models.searchEvents;
+package models.GetConfigSettings;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
-import java.util.ArrayList;
-
 @Data
-public class SearchEventsResponse {
+public class GetConfigSettingsResponse {
     @JsonProperty("Data")
-    public ArrayList<Datum> data;
+    public DataResponse data;
+
     @JsonProperty("Success")
     public boolean success;
+
     @JsonProperty("Error")
     public Object error;
 }

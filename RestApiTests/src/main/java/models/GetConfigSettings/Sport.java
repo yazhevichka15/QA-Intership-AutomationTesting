@@ -1,4 +1,4 @@
-package models.getConfigSettings;
+package models.GetConfigSettings;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;

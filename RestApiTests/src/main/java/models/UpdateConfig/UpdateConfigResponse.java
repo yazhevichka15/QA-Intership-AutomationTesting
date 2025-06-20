@@ -1,13 +1,10 @@
-package models.getConfigSettings;
+package models.UpdateConfig;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 @Data
-public class GetConfigSettingsResponse {
-    @JsonProperty("Data")
-    public DataResponse data;
-
+public class UpdateConfigResponse {
     @JsonProperty("Success")
     public boolean success;
 

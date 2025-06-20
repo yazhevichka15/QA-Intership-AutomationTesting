@@ -1,6 +1,6 @@
 package clients;
 
-import models.getTopSports.GetTopSportsResponse;
+import models.GetTopSports.GetTopSportsResponse;
 
 import java.util.Map;
 
@@ -16,7 +16,6 @@ public class FrontEndClient {
                 .then()
                 .statusCode(200)
                 .extract()
-                .response()
-                .as(GetTopSportsResponse.class);
+                .response().as(GetTopSportsResponse.class);
     }
 }

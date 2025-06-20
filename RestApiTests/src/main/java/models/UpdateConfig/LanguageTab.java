@@ -1,4 +1,4 @@
-package models.updateConfig;
+package models.UpdateConfig;
 
 import lombok.Data;
 

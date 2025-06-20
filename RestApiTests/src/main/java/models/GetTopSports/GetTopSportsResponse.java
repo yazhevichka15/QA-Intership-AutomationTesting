@@ -1,4 +1,4 @@
-package models.getTopSports;
+package models.GetTopSports;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
