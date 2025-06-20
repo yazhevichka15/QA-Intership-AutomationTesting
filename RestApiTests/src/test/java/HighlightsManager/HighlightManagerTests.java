@@ -83,6 +83,31 @@ public class HighlightManagerTests {
 //        );
 //    }
 
+    @Test
+    @DisplayName("")
+    void testAddEventToLanguage() {
+        Map<String, String> queryParams = new HashMap<>();
+        queryParams.put("configId", "126");
+
+        GetConfigSettingsResponse getConfigSettingsResponseBeforeAdd =
+                BackOfficeClient.getConfigSettings(baseAdminURI, queryParams, authCookies);
+
+        UpdateConfigRequest updateRequestBody = setRequestBodyToAddEvent();
+        Response updateConfigResponse = BackOfficeClient.updateConfigResponse(baseAdminURI, updateRequestBody, authCookies);
+
+        GetConfigSettingsResponse getConfigSettingsResponseAfterAdd =
+                BackOfficeClient.getConfigSettings(baseAdminURI, queryParams, authCookies);
+
+        assertAll("",
+                () -> assertThat("",
+                        getConfigSettingsResponseBeforeAdd.data.languageTabs.getFirst().topEvents.size(), is(0)),
+                () -> assertThat("",
+                        updateConfigResponse.statusCode(), is(200)),
+                () -> assertThat("",
+                        getConfigSettingsResponseAfterAdd.data.languageTabs.getFirst().topEvents.size(), is(1))
+        );
+    }
+
 //    @Test
 //    @DisplayName("")
 //    void testDeleteAllSports() {

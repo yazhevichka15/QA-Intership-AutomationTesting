@@ -54,6 +54,39 @@ public class HighlightManagerSteps {
     }
 
     @Step("")
+    public static UpdateConfigRequest setRequestBodyToAddEvent() {
+        UpdateConfigRequest requestBody = new UpdateConfigRequest();
+        requestBody.configId = 126;
+
+        requestBody.highlightsEvents = new ArrayList<>();
+        requestBody.languageTabs = new ArrayList<>();
+        requestBody.sports = new ArrayList<>();
+
+        LanguageTab languageTab0 = new LanguageTab();
+        languageTab0.languageId = 66;
+        languageTab0.highlightsEvents = new ArrayList<>();
+
+        HighlightsEvent event0 = new HighlightsEvent();
+        event0.eventId = 10383907;
+        event0.order = 1;
+        event0.isPromo = false;
+        event0.isSafe = false;
+        languageTab0.highlightsEvents.add(event0);
+        requestBody.languageTabs.add(languageTab0);
+
+        Sport sport0 = new Sport();
+        sport0.sportId = 105;
+        sport0.order = 1;
+        sport0.name = "3x3 Basketball";
+        sport0.isEnabled = true;
+        sport0.categories = new ArrayList<>();
+        sport0.count = 1;
+        requestBody.sports.add(sport0);
+
+        return requestBody;
+    }
+
+    @Step("")
     public static UpdateConfigRequest setRequestBodyToDeleteLanguage() {
         UpdateConfigRequest requestBody = new UpdateConfigRequest();
         requestBody.configId = 126;
