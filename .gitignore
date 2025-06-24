@@ -3,11 +3,6 @@ build/
 !gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**/build/
 !**/src/test/**/build/
-!**/src/test/resources/
-!**/UI-Tests/src/test/resources/
-
-RestApiTests/allure-results/
-RestApiTests/src/test/resources/config.properties
 
 ### IntelliJ IDEA ###
 .idea/modules.xml
@@ -21,27 +16,9 @@ out/
 !**/src/main/**/out/
 !**/src/test/**/out/
 
-### Eclipse ###
-.apt_generated
-.classpath
-.factorypath
-.project
-.settings
-.springBeans
-.sts4-cache
-bin/
-!**/src/main/**/bin/
-!**/src/test/**/bin/
-
-### NetBeans ###
-/nbproject/private/
-/nbbuild/
-/dist/
-/nbdist/
-/.nb-gradle/
-
-### VS Code ###
-.vscode/
-
-### Mac OS ###
-.DS_Store
+### QA ###
+/allure-results/
+/RestApiTests/allure-results/
+/UI-Tests/allure-results/
+/UI-Tests/test/resources/config.properties
+/RestApiTests/test/resources/config.properties
