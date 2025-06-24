@@ -3,7 +3,11 @@ build/
 !gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**/build/
 !**/src/test/**/build/
-!**/src/test/resources/config.properties
+!**/src/test/resources/
+!**/UI-Tests/src/test/resources/
+
+RestApiTests/allure-results/
+RestApiTests/src/test/resources/config.properties
 
 ### IntelliJ IDEA ###
 .idea/modules.xml
