@@ -20,5 +20,5 @@ out/
 /allure-results/
 /RestApiTests/allure-results/
 /UI-Tests/allure-results/
-/UI-Tests/test/resources/config.properties
-/RestApiTests/test/resources/config.properties
+/UI-Tests/src/test/resources/config.properties
+/RestApiTests/src/test/resources/config.properties
