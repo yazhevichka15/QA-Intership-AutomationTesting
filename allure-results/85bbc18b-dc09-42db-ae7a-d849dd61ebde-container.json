@@ -1,0 +1,1 @@
+{"uuid":"85bbc18b-dc09-42db-ae7a-d849dd61ebde","name":"Deleting a bank account should remove it from the list of available accounts and transfer the balance to General Bank Account","children":["1adab945-2606-4aa9-adfa-5875e043fdb2"],"befores":[],"afters":[],"start":1749372671593,"stop":1749372671711}
