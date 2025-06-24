@@ -5,12 +5,27 @@ import java.io.InputStream;
 import java.util.Properties;
 
 public class ConfigLoader {
-    private static Properties properties;
+    private final String username;
+    private final String password;
 
-    public static String get(String key) {
-        properties = new Properties();
+    public ConfigLoader() {
+        Properties properties = readConfig();
+        this.username = properties.getProperty("username");
+        this.password = properties.getProperty("password");
+    }
 
-        try (InputStream input = ConfigLoader.class.getClassLoader().getResourceAsStream("config.properties")) {
+    public String getUsername() {
+        return username;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    private Properties readConfig() {
+        Properties properties = new Properties();
+
+        try (InputStream input = getClass().getClassLoader().getResourceAsStream("config.properties")) {
             if (input == null) {
                 throw new RuntimeException("config.properties not found");
             }
@@ -19,6 +34,6 @@ public class ConfigLoader {
             throw new RuntimeException("Failed to load config.properties", e);
         }
 
-        return properties.getProperty(key);
+        return properties;
     }
 }
