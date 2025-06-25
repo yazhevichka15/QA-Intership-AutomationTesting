@@ -1,13 +1,12 @@
 package clients;
 
-import models.GetTopSports.GetTopSportsResponse;
+import com.altenar.sb2.frontend.model.TopSportFullModelOutIEnumerableApiResult;
 
 import java.util.Map;
-
 import static io.restassured.RestAssured.given;
 
 public class FrontEndClient {
-    public static GetTopSportsResponse getTopSports(String baseURI, Map<String, String> queryParam) {
+    public static TopSportFullModelOutIEnumerableApiResult getTopSports(String baseURI, Map<String, String> queryParam) {
         return given()
                 .baseUri(baseURI)
                 .queryParams(queryParam)
@@ -16,6 +15,6 @@ public class FrontEndClient {
                 .then()
                 .statusCode(200)
                 .extract()
-                .response().as(GetTopSportsResponse.class);
+                .response().as(TopSportFullModelOutIEnumerableApiResult.class);
     }
 }

@@ -1,12 +1,18 @@
 package HighlightsManager;
 
+import com.altenar.sb2.admin.model.UpdateHighlightsConfigRequest;
+import com.altenar.sb2.admin.model.LanguageTabRequestItem;
+import com.altenar.sb2.admin.model.SportRequestItem;
+import com.altenar.sb2.admin.model.HighlightsEventRequestItem;
+import com.altenar.sb2.admin.model.SearchHighlightsEventsRequest;
+
 import ConfigReader.ConfigReader;
 import io.qameta.allure.Step;
 import io.restassured.http.Cookies;
-import models.SearchEvents.SearchEventsRequest;
-import models.UpdateConfig.*;
+import org.joda.time.DateTime;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import static io.restassured.RestAssured.given;
 
@@ -28,211 +34,201 @@ public class HighlightManagerSteps {
     }
 
     @Step("Create empty UpdateConfig request body")
-    public static UpdateConfigRequest createEmptyRequest() {
-        UpdateConfigRequest requestBody = new UpdateConfigRequest();
-        requestBody.configId = 126;
+    public static UpdateHighlightsConfigRequest createEmptyRequest() {
+        UpdateHighlightsConfigRequest requestBody = new UpdateHighlightsConfigRequest();
+        requestBody.setConfigId(126);
 
-        requestBody.highlightsEvents = new ArrayList<>();
-        requestBody.languageTabs = new ArrayList<>();
-        requestBody.sports = new ArrayList<>();
+        requestBody.setHighlightsEvents(new ArrayList<>());
+        requestBody.setLanguageTabs(new ArrayList<>());
+        requestBody.setSports(new ArrayList<>());
 
         return requestBody;
     }
 
     @Step("Create UpdateConfig request body to add new language")
-    public static UpdateConfigRequest createAddLanguageRequest() {
-        UpdateConfigRequest requestBody = new UpdateConfigRequest();
-        requestBody.configId = 126;
+    public static UpdateHighlightsConfigRequest createAddLanguageRequest() {
+        ArrayList<LanguageTabRequestItem> languageTabs = new ArrayList<>();
+        ArrayList<SportRequestItem> sports = new ArrayList<>();
 
-        requestBody.highlightsEvents = new ArrayList<>();
-        requestBody.languageTabs = new ArrayList<>();
-        requestBody.sports = new ArrayList<>();
+        LanguageTabRequestItem languageTab0 = new LanguageTabRequestItem();
+        languageTab0.setLanguageId(111);
+        languageTab0.setHighlightsEvents(new ArrayList<>());
 
-        LanguageTab languageTab0 = new LanguageTab();
-        languageTab0.languageId = 111;
-        languageTab0.highlightsEvents = new ArrayList<>();
-        requestBody.languageTabs.add(languageTab0);
+        SportRequestItem sport0 = new SportRequestItem();
+        sport0.setSportId(99);
+        sport0.setOrder(1);
+        sport0.setIsEnabled(true);
 
-        Sport sport0 = new Sport();
-        sport0.sportId = 99;
-        sport0.order = 1;
-        sport0.name = "Archery";
-        sport0.isEnabled = true;
-        sport0.count = 0;
-        sport0.categories = new ArrayList<>();
-        requestBody.sports.add(sport0);
+        languageTabs.add(languageTab0);
+        sports.add(sport0);
+
+        UpdateHighlightsConfigRequest requestBody = new UpdateHighlightsConfigRequest();
+        requestBody.setConfigId(126);
+        requestBody.setHighlightsEvents(new ArrayList<>());
+        requestBody.setLanguageTabs(languageTabs);
+        requestBody.setSports(sports);
 
         return requestBody;
     }
 
     @Step("Create UpdateConfig request body to delete the language")
-    public static UpdateConfigRequest createDeleteLanguageRequest() {
-        UpdateConfigRequest requestBody = new UpdateConfigRequest();
-        requestBody.configId = 126;
+    public static UpdateHighlightsConfigRequest createDeleteLanguageRequest() {
+        UpdateHighlightsConfigRequest requestBody = new UpdateHighlightsConfigRequest();
 
-        requestBody.highlightsEvents = new ArrayList<>();
-        requestBody.languageTabs = new ArrayList<>();
-        requestBody.sports = new ArrayList<>();
+        ArrayList<SportRequestItem> sports = new ArrayList<>();
 
-        Sport sport0 = new Sport();
-        sport0.sportId = 99;
-        sport0.order = 1;
-        sport0.name = "Archery";
-        sport0.isEnabled = true;
-        sport0.count = 0;
-        sport0.categories = new ArrayList<>();
-        requestBody.sports.add(sport0);
+        SportRequestItem sport0 = new SportRequestItem();
+        sport0.setSportId(99);
+        sport0.setOrder(1);
+        sport0.setIsEnabled(true);
+
+        sports.add(sport0);
+
+        requestBody.setConfigId(126);
+        requestBody.setHighlightsEvents(new ArrayList<>());
+        requestBody.setLanguageTabs(new ArrayList<>());
+        requestBody.setSports(sports);
 
         return requestBody;
     }
 
     @Step("Create UpdateConfig request body to add new event to language")
-    public static UpdateConfigRequest createAddEventRequest() {
-        UpdateConfigRequest requestBody = new UpdateConfigRequest();
-        requestBody.configId = 126;
+    public static UpdateHighlightsConfigRequest createAddEventRequest() {
+        UpdateHighlightsConfigRequest requestBody = new UpdateHighlightsConfigRequest();
 
-        requestBody.highlightsEvents = new ArrayList<>();
-        requestBody.languageTabs = new ArrayList<>();
-        requestBody.sports = new ArrayList<>();
+        ArrayList<LanguageTabRequestItem> languageTabs = new ArrayList<>();
+        ArrayList<SportRequestItem> sports = new ArrayList<>();
+        ArrayList<HighlightsEventRequestItem> highlightsEvents = new ArrayList<>();
 
-        LanguageTab languageTab0 = new LanguageTab();
-        languageTab0.languageId = 66;
-        languageTab0.highlightsEvents = new ArrayList<>();
+        LanguageTabRequestItem languageTab0 = new LanguageTabRequestItem();
+        languageTab0.setLanguageId(66);
+        languageTab0.setHighlightsEvents(new ArrayList<>());
 
-        HighlightsEvent event0 = new HighlightsEvent();
-        event0.eventId = 10383907;
-        event0.order = 1;
-        event0.isPromo = false;
-        event0.isSafe = false;
-        languageTab0.highlightsEvents.add(event0);
+        HighlightsEventRequestItem highlightsEvent0 = new HighlightsEventRequestItem();
+        highlightsEvent0.setEventId((long)10383907);
+        highlightsEvent0.setOrder(1);
+        highlightsEvent0.setIsPromo(false);
+        highlightsEvent0.setIsSafe(false);
 
-        requestBody.languageTabs.add(languageTab0);
+        SportRequestItem sport0 = new SportRequestItem();
+        sport0.setSportId(105);
+        sport0.setOrder(1);
+        sport0.setIsEnabled(true);
 
-        Sport sport0 = new Sport();
-        sport0.sportId = 105;
-        sport0.order = 1;
-        sport0.name = "3x3 Basketball";
-        sport0.isEnabled = true;
-        sport0.categories = new ArrayList<>();
-        sport0.count = 1;
-        requestBody.sports.add(sport0);
+        languageTabs.add(languageTab0);
+        sports.add(sport0);
+        highlightsEvents.add(highlightsEvent0);
+
+        requestBody.setConfigId(126);
+        requestBody.setHighlightsEvents(highlightsEvents);
+        requestBody.setLanguageTabs(languageTabs);
+        requestBody.setSports(sports);
 
         return requestBody;
     }
 
     @Step("Create UpdateConfig request body to set IsSafe status to the event")
-    public static UpdateConfigRequest createSetIsSafeRequest() {
-        UpdateConfigRequest requestBody = new UpdateConfigRequest();
-        requestBody.configId = 126;
+    public static UpdateHighlightsConfigRequest createSetIsSafeRequest() {
+        UpdateHighlightsConfigRequest requestBody = new UpdateHighlightsConfigRequest();
 
-        requestBody.highlightsEvents = new ArrayList<>();
-        requestBody.languageTabs = new ArrayList<>();
-        requestBody.sports = new ArrayList<>();
+        ArrayList<SportRequestItem> sports = new ArrayList<>();
+        ArrayList<HighlightsEventRequestItem> highlightsEvents = new ArrayList<>();
 
-        HighlightsEvent event0 = new HighlightsEvent();
-        event0.eventId = 10299752;
-        event0.order = 1;
-        event0.isPromo = false;
-        event0.isSafe = true;
-        requestBody.highlightsEvents.add(event0);
+        HighlightsEventRequestItem highlightsEvent0 = new HighlightsEventRequestItem();
+        highlightsEvent0.setEventId((long)10299752);
+        highlightsEvent0.setOrder(1);
+        highlightsEvent0.setIsSafe(false);
+        highlightsEvent0.setIsPromo(false);
 
-        Sport sport0 = new Sport();
-        sport0.sportId = 106;
-        sport0.order = 1;
-        sport0.name = "Aussie Rules";
-        sport0.isEnabled = true;
-        sport0.count = 2;
-        sport0.categories = new ArrayList<>();
+        SportRequestItem sport0 = new SportRequestItem();
+        sport0.setSportId(106);
+        sport0.setOrder(1);
+        sport0.setIsEnabled(true);
 
-        Category category0 = new Category();
-        category0.categoryId = 1256;
-        category0.name = "Australia";
-        sport0.categories.add(category0);
+        sports.add(sport0);
+        highlightsEvents.add(highlightsEvent0);
 
-        requestBody.sports.add(sport0);
+        requestBody.setConfigId(126);
+        requestBody.setHighlightsEvents(highlightsEvents);
+        requestBody.setLanguageTabs(new ArrayList<>());
+        requestBody.setSports(sports);
 
         return requestBody;
     }
 
     @Step("Create UpdateConfig request body to set IsPromo status to the event")
-    public static UpdateConfigRequest createSetIsPromoRequest() {
-        UpdateConfigRequest requestBody = new UpdateConfigRequest();
-        requestBody.configId = 126;
+    public static UpdateHighlightsConfigRequest createSetIsPromoRequest() {
+        UpdateHighlightsConfigRequest requestBody = new UpdateHighlightsConfigRequest();
 
-        requestBody.highlightsEvents = new ArrayList<>();
-        requestBody.languageTabs = new ArrayList<>();
-        requestBody.sports = new ArrayList<>();
+        ArrayList<SportRequestItem> sports = new ArrayList<>();
+        ArrayList<HighlightsEventRequestItem> highlightsEvents = new ArrayList<>();
 
-        HighlightsEvent event0 = new HighlightsEvent();
-        event0.eventId = 10299752;
-        event0.order = 1;
-        event0.isPromo = true;
-        event0.isSafe = false;
-        requestBody.highlightsEvents.add(event0);
+        HighlightsEventRequestItem highlightsEvent0 = new HighlightsEventRequestItem();
+        highlightsEvent0.setEventId((long)10299752);
+        highlightsEvent0.setOrder(1);
+        highlightsEvent0.setIsSafe(false);
+        highlightsEvent0.setIsPromo(true);
 
-        Sport sport0 = new Sport();
-        sport0.sportId = 106;
-        sport0.order = 1;
-        sport0.name = "Aussie Rules";
-        sport0.isEnabled = true;
-        sport0.count = 2;
-        sport0.categories = new ArrayList<>();
+        SportRequestItem sport0 = new SportRequestItem();
+        sport0.setSportId(106);
+        sport0.setOrder(1);
+        sport0.setIsEnabled(true);
 
-        Category category0 = new Category();
-        category0.categoryId = 1256;
-        category0.name = "Australia";
-        sport0.categories.add(category0);
+        sports.add(sport0);
+        highlightsEvents.add(highlightsEvent0);
 
-        requestBody.sports.add(sport0);
+        requestBody.setConfigId(126);
+        requestBody.setHighlightsEvents(highlightsEvents);
+        requestBody.setLanguageTabs(new ArrayList<>());
+        requestBody.setSports(sports);
 
         return requestBody;
     }
 
     @Step("Create UpdateConfig request body to set the IsSafe and IsPromo statuses to the event")
-    public static UpdateConfigRequest createDoubleStatusRequest() {
-        UpdateConfigRequest requestBody = new UpdateConfigRequest();
-        requestBody.configId = 126;
+    public static UpdateHighlightsConfigRequest createDoubleStatusRequest() {
+        UpdateHighlightsConfigRequest requestBody = new UpdateHighlightsConfigRequest();
 
-        requestBody.highlightsEvents = new ArrayList<>();
-        requestBody.languageTabs = new ArrayList<>();
-        requestBody.sports = new ArrayList<>();
+        ArrayList<SportRequestItem> sports = new ArrayList<>();
+        ArrayList<HighlightsEventRequestItem> highlightsEvents = new ArrayList<>();
 
-        HighlightsEvent event0 = new HighlightsEvent();
-        event0.eventId = 10299752;
-        event0.order = 1;
-        event0.isPromo = true;
-        event0.isSafe = true;
-        requestBody.highlightsEvents.add(event0);
+        HighlightsEventRequestItem highlightsEvent0 = new HighlightsEventRequestItem();
+        highlightsEvent0.setEventId((long)10299752);
+        highlightsEvent0.setOrder(1);
+        highlightsEvent0.setIsSafe(true);
+        highlightsEvent0.setIsPromo(true);
 
-        Sport sport0 = new Sport();
-        sport0.sportId = 106;
-        sport0.order = 1;
-        sport0.name = "Aussie Rules";
-        sport0.isEnabled = true;
-        sport0.count = 2;
-        sport0.categories = new ArrayList<>();
+        SportRequestItem sport0 = new SportRequestItem();
+        sport0.setSportId(106);
+        sport0.setOrder(1);
+        sport0.setIsEnabled(true);
 
-        Category category0 = new Category();
-        category0.categoryId = 1256;
-        category0.name = "Australia";
-        sport0.categories.add(category0);
+        sports.add(sport0);
+        highlightsEvents.add(highlightsEvent0);
 
-        requestBody.sports.add(sport0);
+        requestBody.setConfigId(126);
+        requestBody.setHighlightsEvents(highlightsEvents);
+        requestBody.setLanguageTabs(new ArrayList<>());
+        requestBody.setSports(sports);
 
         return requestBody;
     }
 
     @Step("Create UpdateConfig request body to search events with incorrect dates")
-    public static SearchEventsRequest createSearchEventsRequest() {
-        SearchEventsRequest requestBody = new SearchEventsRequest();
-        requestBody.champId = 50320;
+    public static SearchHighlightsEventsRequest createSearchEventsRequest() {
+        SearchHighlightsEventsRequest requestBody = new SearchHighlightsEventsRequest();
 
-        requestBody.dateFrom = "2025-06-20 12:00:00";
-        requestBody.dateTo = "2025-06-20 00:00:00";
+        List<Integer> sportIds = new ArrayList<>();
 
-        requestBody.sportIds = new ArrayList<>();
         Integer sportId0 = 106;
-        requestBody.sportIds.add(sportId0);
+
+        sportIds.add(sportId0);
+
+        requestBody.setChampId(50320);
+        requestBody.setSearchQuery("");
+        requestBody.setSportIds(sportIds);
+        requestBody.setDateFrom(new DateTime("2025-06-20 12:00:00"));
+        requestBody.setDateTo(new DateTime("2025-06-20 00:00:00"));
 
         return requestBody;
     }

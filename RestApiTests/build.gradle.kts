@@ -10,6 +10,14 @@ repositories {
     mavenCentral()
 }
 
+sourceSets {
+    named("main") {
+        java {
+            srcDir("$buildDir/generated-sources/swagger/src/main")
+        }
+    }
+}
+
 java {
     toolchain {
         languageVersion.set(JavaLanguageVersion.of(21))
@@ -17,13 +25,18 @@ java {
 }
 
 dependencies {
-    implementation("org.projectlombok:lombok:1.18.22")
+    implementation("org.projectlombok:lombok:1.18.30")
+    annotationProcessor("org.projectlombok:lombok:1.18.30") // ← обязательно для генерации
+
+    testImplementation("org.projectlombok:lombok:1.18.30")
+    testAnnotationProcessor("org.projectlombok:lombok:1.18.30")
     implementation("io.rest-assured:kotlin-extensions:5.5.5")
     implementation("com.fasterxml.jackson.core:jackson-annotations:2.17.0")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.17.0")
     implementation("org.openapitools:openapi-generator-gradle-plugin:7.2.0")
     implementation("com.google.code.gson:gson:2.7")
     implementation("joda-time:joda-time:2.12.1")
+    implementation("org.openapitools:jackson-databind-nullable:0.2.6")
 
     testImplementation(platform("org.junit:junit-bom:5.10.0"))
     testImplementation("org.junit.jupiter:junit-jupiter")
@@ -38,14 +51,14 @@ val openApiGenerateFront by tasks.registering(org.openapitools.generator.gradle.
     generatorName.set("java")
     remoteInputSpec.set("https://sb2frontend-altenar2-stage.biahosted.com/swagger/v1/swagger.json")
     outputDir.set("$buildDir/generated-sources/swagger")
-    invokerPackage.set("") // можно указать, если нужно
+    invokerPackage.set("")
     templateDir.set("$projectDir/src/test/resources/templates")
     apiPackage.set("com.altenar.sb2.frontend.api")
     modelPackage.set("com.altenar.sb2.frontend.model")
 
     importMappings.set(
         mapOf(
-            "FeedProvidersEnum" to "com.altenar.sb2.model.frontend.FeedProvidersEnum"
+            "FeedProvidersEnum" to "com.altenar.sb2.frontend.model.FeedProvidersEnum"
         )
     )
 
@@ -80,7 +93,7 @@ val openApiGenerateAdmin by tasks.registering(org.openapitools.generator.gradle.
 
     importMappings.set(
         mapOf(
-            "FeedProvidersEnum" to "com.altenar.sb2.model.admin.FeedProvidersEnum"
+            "FeedProvidersEnum" to "com.altenar.sb2.admin.model.FeedProvidersEnum"
         )
     )
 
