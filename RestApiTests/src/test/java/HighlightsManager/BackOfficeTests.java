@@ -1,14 +1,11 @@
 package HighlightsManager;
 
 import clients.*;
-
-import io.restassured.response.Response;
 import com.altenar.sb2.admin.model.HighlightsConfigSettingsApiResult;
 import com.altenar.sb2.admin.model.UpdateHighlightsConfigRequest;
 import com.altenar.sb2.admin.model.ApiResult;
 import com.altenar.sb2.admin.model.SearchHighlightsEventsRequest;
 import com.altenar.sb2.admin.model.EventCandidateItemListApiResult;
-import com.altenar.sb2.frontend.model.TopSportFullModelOutIEnumerableApiResult;
 import static HighlightsManager.HighlightManagerSteps.*;
 
 import java.util.HashMap;
@@ -24,32 +21,31 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
-public class HighlightManagerTests {
-    private final String baseAdminURI = "https://sb2admin-altenar2-stage.biahosted.com";
-    private final String baseFrontendURI = "https://sb2frontend-altenar2-stage.biahosted.com";
+public class BackOfficeTests {
     private Cookies authCookies;
+    private static final String CONFIG_ID = "126";
 
     @BeforeEach
-    @Step("Get Highlight Manager login cookies")
+    @Step("Get BO Highlight Manager login cookies")
     void setUp() {
-        authCookies = getCookies(baseAdminURI);
+        authCookies = BackOfficeClient.getCookies();
     }
 
     @Test
     @DisplayName("Adding a language should increase the number of languages in the languageTab")
     void testAddLanguage() {
         Map<String, String> queryParams = new HashMap<>();
-        queryParams.put("configId", "126");
+        queryParams.put("configId", CONFIG_ID);
 
         HighlightsConfigSettingsApiResult configSettingsBefore =
-                BackOfficeClient.getConfigSettings(baseAdminURI, queryParams, authCookies);
+                BackOfficeClient.getConfigSettings(queryParams, authCookies);
 
         UpdateHighlightsConfigRequest requestBody = createAddLanguageRequest();
         ApiResult updateConfigResponse =
-                BackOfficeClient.updateConfig(baseAdminURI, requestBody, authCookies);
+                BackOfficeClient.updateConfig(requestBody, authCookies);
 
         HighlightsConfigSettingsApiResult configSettingsAfter =
-                BackOfficeClient.getConfigSettings(baseAdminURI, queryParams, authCookies);
+                BackOfficeClient.getConfigSettings(queryParams, authCookies);
 
         assertAll("Verify languageTab update after adding a new language",
                 () -> assertThat("The languageTab should be empty before adding a new language",
@@ -67,17 +63,17 @@ public class HighlightManagerTests {
     @DisplayName("Deleting the language should reduce the number of languages in the languageTab")
     void testDeleteLanguage() {
         Map<String, String> queryParams = new HashMap<>();
-        queryParams.put("configId", "126");
+        queryParams.put("configId", CONFIG_ID);
 
         HighlightsConfigSettingsApiResult configSettingsBefore =
-                BackOfficeClient.getConfigSettings(baseAdminURI, queryParams, authCookies);
+                BackOfficeClient.getConfigSettings(queryParams, authCookies);
 
         UpdateHighlightsConfigRequest requestBody = createDeleteLanguageRequest();
         ApiResult updateConfigResponse =
-                BackOfficeClient.updateConfig(baseAdminURI, requestBody, authCookies);
+                BackOfficeClient.updateConfig(requestBody, authCookies);
 
         HighlightsConfigSettingsApiResult configSettingsAfter =
-                BackOfficeClient.getConfigSettings(baseAdminURI, queryParams, authCookies);
+                BackOfficeClient.getConfigSettings(queryParams, authCookies);
 
         assertAll("Verify languageTab update after deleting the language",
                 () -> assertThat("The languageTab should contain the language before deleting",
@@ -95,17 +91,17 @@ public class HighlightManagerTests {
     @DisplayName("Adding a event to language should increase the number of events in the topEvents")
     void testAddEventToLanguage() {
         Map<String, String> queryParams = new HashMap<>();
-        queryParams.put("configId", "126");
+        queryParams.put("configId", CONFIG_ID);
 
         HighlightsConfigSettingsApiResult configSettingsBefore =
-                BackOfficeClient.getConfigSettings(baseAdminURI, queryParams, authCookies);
+                BackOfficeClient.getConfigSettings(queryParams, authCookies);
 
-        UpdateHighlightsConfigRequest requestBody = createAddEventRequest();
+        UpdateHighlightsConfigRequest requestBody = createAddEventToLangRequest();
         ApiResult updateConfigResponse =
-                BackOfficeClient.updateConfig(baseAdminURI, requestBody, authCookies);
+                BackOfficeClient.updateConfig(requestBody, authCookies);
 
         HighlightsConfigSettingsApiResult configSettingsAfter =
-                BackOfficeClient.getConfigSettings(baseAdminURI, queryParams, authCookies);
+                BackOfficeClient.getConfigSettings(queryParams, authCookies);
 
         assertAll("Verify topEvents update after adding a new event to language",
                 () -> assertThat("The topEvents should be empty before adding a new event",
@@ -120,13 +116,13 @@ public class HighlightManagerTests {
     }
 
     @Test
-    @DisplayName("Searching events with incorrect dates should get a server error")
-    void testSearchEvents() {
-        SearchHighlightsEventsRequest requestBody = createSearchEventsRequest();
+    @DisplayName("Searching events with incorrect dates shouldn't be successful")
+    void testSearchEventsWithInvalidDates() {
+        SearchHighlightsEventsRequest requestBody = createInvalidSearchEventsRequest();
         EventCandidateItemListApiResult searchEvents =
-                BackOfficeClient.searchEvents(baseAdminURI, requestBody, authCookies);
+                BackOfficeClient.searchEvents(requestBody, authCookies);
 
-        assertThat("Search with an invalid request should get an server error 400",
+        assertThat("Search with an invalid request shouldn't be successful",
                 searchEvents.getSuccess(), is(false));
     }
 
@@ -134,17 +130,17 @@ public class HighlightManagerTests {
     @DisplayName("Adding IsSafe status to the event should update the isSafe parameter to true")
     void testSetEventStatusIsSafe() {
         Map<String, String> queryParams = new HashMap<>();
-        queryParams.put("configId", "126");
+        queryParams.put("configId", CONFIG_ID);
 
         HighlightsConfigSettingsApiResult configSettingsBefore =
-                BackOfficeClient.getConfigSettings(baseAdminURI, queryParams, authCookies);
+                BackOfficeClient.getConfigSettings(queryParams, authCookies);
 
         UpdateHighlightsConfigRequest requestBody = createSetIsSafeRequest();
         ApiResult updateConfigResponse =
-                BackOfficeClient.updateConfig(baseAdminURI, requestBody, authCookies);
+                BackOfficeClient.updateConfig(requestBody, authCookies);
 
         HighlightsConfigSettingsApiResult configSettingsAfter =
-                BackOfficeClient.getConfigSettings(baseAdminURI, queryParams, authCookies);
+                BackOfficeClient.getConfigSettings(queryParams, authCookies);
 
         assertAll("Verify IsSafe status update after set it to the event",
                 () -> assertThat("The isSafe parameter should be false before update",
@@ -162,17 +158,17 @@ public class HighlightManagerTests {
     @DisplayName("Adding IsPromo status to the event should update the isPromo parameter to true")
     void testSetEventStatusIsPromo() {
         Map<String, String> queryParams = new HashMap<>();
-        queryParams.put("configId", "126");
+        queryParams.put("configId", CONFIG_ID);
 
         HighlightsConfigSettingsApiResult configSettingsBefore =
-                BackOfficeClient.getConfigSettings(baseAdminURI, queryParams, authCookies);
+                BackOfficeClient.getConfigSettings(queryParams, authCookies);
 
         UpdateHighlightsConfigRequest requestBody = createSetIsPromoRequest();
         ApiResult updateConfigResponse =
-                BackOfficeClient.updateConfig(baseAdminURI, requestBody, authCookies);
+                BackOfficeClient.updateConfig(requestBody, authCookies);
 
         HighlightsConfigSettingsApiResult configSettingsAfter =
-                BackOfficeClient.getConfigSettings(baseAdminURI, queryParams, authCookies);
+                BackOfficeClient.getConfigSettings(queryParams, authCookies);
 
         assertAll("Verify IsPromo status update after set it to the event",
                 () -> assertThat("The isPromo parameter should be false before update",
@@ -187,54 +183,24 @@ public class HighlightManagerTests {
     }
 
     @Test
-    @DisplayName("Adding IsPromo status to event when IsSafe status added should get a server error")
-    void testSetEventStatusIsPromoWhenIsSafe() {
+    @DisplayName("Adding IsPromo status to event when IsSafe status added shouldn't be successful")
+    void testSetDoubleStatus() {
         UpdateHighlightsConfigRequest requestBody = createDoubleStatusRequest();
         ApiResult updateConfigResponse =
-                BackOfficeClient.updateConfig(baseAdminURI, requestBody, authCookies);
+                BackOfficeClient.updateConfig(requestBody, authCookies);
 
-        assertThat("Setting two statuses at once should get an server error 400",
+        assertThat("Setting two statuses at once shouldn't be successful",
                 updateConfigResponse.getSuccess(), is(false));
     }
 
     @Test
-    @DisplayName("Deleting all sports from Top Sports should get a server error")
+    @DisplayName("Deleting all sports from Top Sports shouldn't be successful")
     void testDeleteAllSports() {
         UpdateHighlightsConfigRequest requestBody = createEmptyRequest();
         ApiResult updateConfigResponse =
-                BackOfficeClient.updateConfig(baseAdminURI, requestBody, authCookies);
+                BackOfficeClient.updateConfig(requestBody, authCookies);
 
-        assertThat("Deleting all sports at once should get an server error 400",
+        assertThat("Deleting all sports at once shouldn't be successful",
                 updateConfigResponse.getSuccess(), is(false));
-    }
-
-    @Test
-    @DisplayName("Should return top sports for type upcoming with expected structure and content")
-    void testGetTopSportsUpcoming() {
-        Map<String, String> queryParams = new HashMap<>();
-        queryParams.put("timezoneOffset", "-180");
-        queryParams.put("langId", "66");
-        queryParams.put("skinName", "betsonic");
-        queryParams.put("configId", "1");
-        queryParams.put("culture", "no-no");
-        queryParams.put("countryCode", "RU");
-        queryParams.put("deviceType", "Desktop");
-        queryParams.put("numformat", "en");
-        queryParams.put("integration", "skintest");
-        queryParams.put("topSportType", "upcoming");
-
-        TopSportFullModelOutIEnumerableApiResult topSports =
-                FrontEndClient.getTopSports(baseFrontendURI, queryParams);
-
-        assertAll("Validate top sports response for upcoming type",
-                () -> assertThat("Should return 2 top sports",
-                        topSports.getResult(), hasSize(2)),
-
-                () -> assertThat("First sport should have sportId equal to 106",
-                        topSports.getResult().getFirst().getSportId(), is(106)),
-
-                () -> assertThat("Second sport should have sportId equal to -1",
-                        topSports.getResult().getLast().getSportId(), is(-1))
-        );
     }
 }

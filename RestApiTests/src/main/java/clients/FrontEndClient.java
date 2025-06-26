@@ -6,9 +6,11 @@ import java.util.Map;
 import static io.restassured.RestAssured.given;
 
 public class FrontEndClient {
-    public static TopSportFullModelOutIEnumerableApiResult getTopSports(String baseURI, Map<String, String> queryParam) {
+    private static final String baseFrontendURI = "https://sb2frontend-altenar2-stage.biahosted.com";
+
+    public static TopSportFullModelOutIEnumerableApiResult getTopSports(Map<String, String> queryParam) {
         return given()
-                .baseUri(baseURI)
+                .baseUri(baseFrontendURI)
                 .queryParams(queryParam)
                 .when()
                 .get("/api/Sportsbook/GetTopSports")

@@ -6,38 +6,31 @@ import com.altenar.sb2.admin.model.SportRequestItem;
 import com.altenar.sb2.admin.model.HighlightsEventRequestItem;
 import com.altenar.sb2.admin.model.SearchHighlightsEventsRequest;
 
-import ConfigReader.ConfigReader;
 import io.qameta.allure.Step;
-import io.restassured.http.Cookies;
 import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static io.restassured.RestAssured.given;
-
 public class HighlightManagerSteps {
-    private final static ConfigReader configReader = new ConfigReader();
+    private static final int CONFIG_ID = 126;
+    private static final int NORWEGIAN_LANGUAGE_ID = 66;
+    private static final int BEACH_VOLLEY_SPORT_ID = 82;
+    private static final int TEST_CHAMP_ID = 18828;
+    private static final int ORDER = 1;
 
-    @Step("Receive Highlight Manager login cookies")
-    public static Cookies getCookies(String baseAdminURI) {
-        return given()
-                .baseUri(baseAdminURI)
-                .param("UserName", configReader.getUsername())
-                .param("Password", configReader.getPassword())
-                .when()
-                .post("/Account/Login")
-                .then()
-                .extract()
-                .response()
-                .getDetailedCookies();
-    }
+    private static final long TEST_EVENT_ID = 10439428;
+
+    private static final String DATE_FROM = "2025-06-26 23:00:00";
+    private static final String DATE_TO = "2025-06-26 12:00:00";
 
     @Step("Create empty UpdateConfig request body")
     public static UpdateHighlightsConfigRequest createEmptyRequest() {
         UpdateHighlightsConfigRequest requestBody = new UpdateHighlightsConfigRequest();
-        requestBody.setConfigId(126);
 
+        requestBody.setConfigId(CONFIG_ID);
         requestBody.setHighlightsEvents(new ArrayList<>());
         requestBody.setLanguageTabs(new ArrayList<>());
         requestBody.setSports(new ArrayList<>());
@@ -47,23 +40,22 @@ public class HighlightManagerSteps {
 
     @Step("Create UpdateConfig request body to add new language")
     public static UpdateHighlightsConfigRequest createAddLanguageRequest() {
+        UpdateHighlightsConfigRequest requestBody = new UpdateHighlightsConfigRequest();
         ArrayList<LanguageTabRequestItem> languageTabs = new ArrayList<>();
         ArrayList<SportRequestItem> sports = new ArrayList<>();
 
         LanguageTabRequestItem languageTab0 = new LanguageTabRequestItem();
-        languageTab0.setLanguageId(111);
+        languageTab0.setLanguageId(NORWEGIAN_LANGUAGE_ID);
         languageTab0.setHighlightsEvents(new ArrayList<>());
+        languageTabs.add(languageTab0);
 
         SportRequestItem sport0 = new SportRequestItem();
-        sport0.setSportId(99);
-        sport0.setOrder(1);
+        sport0.setSportId(BEACH_VOLLEY_SPORT_ID);
+        sport0.setOrder(ORDER);
         sport0.setIsEnabled(true);
-
-        languageTabs.add(languageTab0);
         sports.add(sport0);
 
-        UpdateHighlightsConfigRequest requestBody = new UpdateHighlightsConfigRequest();
-        requestBody.setConfigId(126);
+        requestBody.setConfigId(CONFIG_ID);
         requestBody.setHighlightsEvents(new ArrayList<>());
         requestBody.setLanguageTabs(languageTabs);
         requestBody.setSports(sports);
@@ -74,17 +66,15 @@ public class HighlightManagerSteps {
     @Step("Create UpdateConfig request body to delete the language")
     public static UpdateHighlightsConfigRequest createDeleteLanguageRequest() {
         UpdateHighlightsConfigRequest requestBody = new UpdateHighlightsConfigRequest();
-
         ArrayList<SportRequestItem> sports = new ArrayList<>();
 
         SportRequestItem sport0 = new SportRequestItem();
-        sport0.setSportId(99);
-        sport0.setOrder(1);
+        sport0.setSportId(BEACH_VOLLEY_SPORT_ID);
+        sport0.setOrder(ORDER);
         sport0.setIsEnabled(true);
-
         sports.add(sport0);
 
-        requestBody.setConfigId(126);
+        requestBody.setConfigId(CONFIG_ID);
         requestBody.setHighlightsEvents(new ArrayList<>());
         requestBody.setLanguageTabs(new ArrayList<>());
         requestBody.setSports(sports);
@@ -93,34 +83,33 @@ public class HighlightManagerSteps {
     }
 
     @Step("Create UpdateConfig request body to add new event to language")
-    public static UpdateHighlightsConfigRequest createAddEventRequest() {
+    public static UpdateHighlightsConfigRequest createAddEventToLangRequest() {
         UpdateHighlightsConfigRequest requestBody = new UpdateHighlightsConfigRequest();
-
         ArrayList<LanguageTabRequestItem> languageTabs = new ArrayList<>();
         ArrayList<SportRequestItem> sports = new ArrayList<>();
-        ArrayList<HighlightsEventRequestItem> highlightsEvents = new ArrayList<>();
 
         LanguageTabRequestItem languageTab0 = new LanguageTabRequestItem();
-        languageTab0.setLanguageId(66);
-        languageTab0.setHighlightsEvents(new ArrayList<>());
 
+        ArrayList<HighlightsEventRequestItem> langHighlightsEvents = new ArrayList<>();
         HighlightsEventRequestItem highlightsEvent0 = new HighlightsEventRequestItem();
-        highlightsEvent0.setEventId((long)10383907);
-        highlightsEvent0.setOrder(1);
+        highlightsEvent0.setEventId(TEST_EVENT_ID);
+        highlightsEvent0.setOrder(ORDER);
         highlightsEvent0.setIsPromo(false);
         highlightsEvent0.setIsSafe(false);
+        langHighlightsEvents.add(highlightsEvent0);
+
+        languageTab0.setLanguageId(NORWEGIAN_LANGUAGE_ID);
+        languageTab0.setHighlightsEvents(langHighlightsEvents);
+        languageTabs.add(languageTab0);
 
         SportRequestItem sport0 = new SportRequestItem();
-        sport0.setSportId(105);
-        sport0.setOrder(1);
+        sport0.setSportId(BEACH_VOLLEY_SPORT_ID);
+        sport0.setOrder(ORDER);
         sport0.setIsEnabled(true);
-
-        languageTabs.add(languageTab0);
         sports.add(sport0);
-        highlightsEvents.add(highlightsEvent0);
 
-        requestBody.setConfigId(126);
-        requestBody.setHighlightsEvents(highlightsEvents);
+        requestBody.setConfigId(CONFIG_ID);
+        requestBody.setHighlightsEvents(new ArrayList<>());
         requestBody.setLanguageTabs(languageTabs);
         requestBody.setSports(sports);
 
@@ -130,25 +119,23 @@ public class HighlightManagerSteps {
     @Step("Create UpdateConfig request body to set IsSafe status to the event")
     public static UpdateHighlightsConfigRequest createSetIsSafeRequest() {
         UpdateHighlightsConfigRequest requestBody = new UpdateHighlightsConfigRequest();
-
         ArrayList<SportRequestItem> sports = new ArrayList<>();
         ArrayList<HighlightsEventRequestItem> highlightsEvents = new ArrayList<>();
 
         HighlightsEventRequestItem highlightsEvent0 = new HighlightsEventRequestItem();
-        highlightsEvent0.setEventId((long)10299752);
-        highlightsEvent0.setOrder(1);
-        highlightsEvent0.setIsSafe(false);
+        highlightsEvent0.setEventId(TEST_EVENT_ID);
+        highlightsEvent0.setOrder(ORDER);
+        highlightsEvent0.setIsSafe(true);
         highlightsEvent0.setIsPromo(false);
-
-        SportRequestItem sport0 = new SportRequestItem();
-        sport0.setSportId(106);
-        sport0.setOrder(1);
-        sport0.setIsEnabled(true);
-
-        sports.add(sport0);
         highlightsEvents.add(highlightsEvent0);
 
-        requestBody.setConfigId(126);
+        SportRequestItem sport0 = new SportRequestItem();
+        sport0.setSportId(BEACH_VOLLEY_SPORT_ID);
+        sport0.setOrder(ORDER);
+        sport0.setIsEnabled(true);
+        sports.add(sport0);
+
+        requestBody.setConfigId(CONFIG_ID);
         requestBody.setHighlightsEvents(highlightsEvents);
         requestBody.setLanguageTabs(new ArrayList<>());
         requestBody.setSports(sports);
@@ -159,25 +146,23 @@ public class HighlightManagerSteps {
     @Step("Create UpdateConfig request body to set IsPromo status to the event")
     public static UpdateHighlightsConfigRequest createSetIsPromoRequest() {
         UpdateHighlightsConfigRequest requestBody = new UpdateHighlightsConfigRequest();
-
         ArrayList<SportRequestItem> sports = new ArrayList<>();
         ArrayList<HighlightsEventRequestItem> highlightsEvents = new ArrayList<>();
 
         HighlightsEventRequestItem highlightsEvent0 = new HighlightsEventRequestItem();
-        highlightsEvent0.setEventId((long)10299752);
-        highlightsEvent0.setOrder(1);
+        highlightsEvent0.setEventId(TEST_EVENT_ID);
+        highlightsEvent0.setOrder(ORDER);
         highlightsEvent0.setIsSafe(false);
         highlightsEvent0.setIsPromo(true);
-
-        SportRequestItem sport0 = new SportRequestItem();
-        sport0.setSportId(106);
-        sport0.setOrder(1);
-        sport0.setIsEnabled(true);
-
-        sports.add(sport0);
         highlightsEvents.add(highlightsEvent0);
 
-        requestBody.setConfigId(126);
+        SportRequestItem sport0 = new SportRequestItem();
+        sport0.setSportId(BEACH_VOLLEY_SPORT_ID);
+        sport0.setOrder(ORDER);
+        sport0.setIsEnabled(true);
+        sports.add(sport0);
+
+        requestBody.setConfigId(CONFIG_ID);
         requestBody.setHighlightsEvents(highlightsEvents);
         requestBody.setLanguageTabs(new ArrayList<>());
         requestBody.setSports(sports);
@@ -188,25 +173,23 @@ public class HighlightManagerSteps {
     @Step("Create UpdateConfig request body to set the IsSafe and IsPromo statuses to the event")
     public static UpdateHighlightsConfigRequest createDoubleStatusRequest() {
         UpdateHighlightsConfigRequest requestBody = new UpdateHighlightsConfigRequest();
-
         ArrayList<SportRequestItem> sports = new ArrayList<>();
         ArrayList<HighlightsEventRequestItem> highlightsEvents = new ArrayList<>();
 
         HighlightsEventRequestItem highlightsEvent0 = new HighlightsEventRequestItem();
-        highlightsEvent0.setEventId((long)10299752);
-        highlightsEvent0.setOrder(1);
+        highlightsEvent0.setEventId(TEST_EVENT_ID);
+        highlightsEvent0.setOrder(ORDER);
         highlightsEvent0.setIsSafe(true);
         highlightsEvent0.setIsPromo(true);
-
-        SportRequestItem sport0 = new SportRequestItem();
-        sport0.setSportId(106);
-        sport0.setOrder(1);
-        sport0.setIsEnabled(true);
-
-        sports.add(sport0);
         highlightsEvents.add(highlightsEvent0);
 
-        requestBody.setConfigId(126);
+        SportRequestItem sport0 = new SportRequestItem();
+        sport0.setSportId(BEACH_VOLLEY_SPORT_ID);
+        sport0.setOrder(ORDER);
+        sport0.setIsEnabled(true);
+        sports.add(sport0);
+
+        requestBody.setConfigId(CONFIG_ID);
         requestBody.setHighlightsEvents(highlightsEvents);
         requestBody.setLanguageTabs(new ArrayList<>());
         requestBody.setSports(sports);
@@ -215,20 +198,20 @@ public class HighlightManagerSteps {
     }
 
     @Step("Create UpdateConfig request body to search events with incorrect dates")
-    public static SearchHighlightsEventsRequest createSearchEventsRequest() {
+    public static SearchHighlightsEventsRequest createInvalidSearchEventsRequest() {
         SearchHighlightsEventsRequest requestBody = new SearchHighlightsEventsRequest();
 
         List<Integer> sportIds = new ArrayList<>();
+        sportIds.add(BEACH_VOLLEY_SPORT_ID);
 
-        Integer sportId0 = 106;
+        DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss");
+        DateTime from = formatter.parseDateTime(DATE_FROM);
+        DateTime to = formatter.parseDateTime(DATE_TO);
 
-        sportIds.add(sportId0);
-
-        requestBody.setChampId(50320);
-        requestBody.setSearchQuery("");
+        requestBody.setChampId(TEST_CHAMP_ID);
         requestBody.setSportIds(sportIds);
-        requestBody.setDateFrom(new DateTime("2025-06-20 12:00:00"));
-        requestBody.setDateTo(new DateTime("2025-06-20 00:00:00"));
+        requestBody.setDateFrom(from);
+        requestBody.setDateTo(to);
 
         return requestBody;
     }
