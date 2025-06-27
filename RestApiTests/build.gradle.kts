@@ -36,11 +36,13 @@ dependencies {
     implementation("org.openapitools:openapi-generator-gradle-plugin:7.2.0")
     implementation("com.google.code.gson:gson:2.7")
     implementation("joda-time:joda-time:2.12.1")
+    implementation("com.github.viclovsky:swagger-coverage-rest-assured:1.5.0")
 
     testImplementation(platform("org.junit:junit-bom:5.10.0"))
     testImplementation("org.junit.jupiter:junit-jupiter")
     testImplementation("io.qameta.allure:allure-junit5:2.25.0")
     testImplementation("org.projectlombok:lombok:1.18.30")
+    testImplementation("com.github.viclovsky:swagger-coverage-rest-assured:1.5.0")
 }
 
 tasks.test {

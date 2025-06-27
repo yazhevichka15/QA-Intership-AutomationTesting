@@ -26,7 +26,7 @@ public class FrontEndTests {
     private static final String TEST_INTEGRATION = "skintest";
     private static final String UPCOMING_TOP_SPORT_TYPE = "upcoming";
 
-    private static final int CRICKET_SPORT_ID = 74;
+    private static final int AMERICAN_FOOTBALL_SPORT_ID = 75;
     private static final int OTHERS_SPORT_ID = -1;
 
     @Test
@@ -52,7 +52,7 @@ public class FrontEndTests {
                         topSports.getResult(), hasSize(2)),
 
                 () -> assertThat("First sport should have sportId equal to cricket's sportId",
-                        topSports.getResult().getFirst().getSportId(), is(CRICKET_SPORT_ID)),
+                        topSports.getResult().getFirst().getSportId(), is(AMERICAN_FOOTBALL_SPORT_ID)),
 
                 () -> assertThat("Second sport should have sportId equal to others sportId",
                         topSports.getResult().getLast().getSportId(), is(OTHERS_SPORT_ID))

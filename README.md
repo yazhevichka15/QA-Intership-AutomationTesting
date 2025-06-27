@@ -127,9 +127,11 @@ It is best to do the tests one at a time
 ### How to view Allure reports:
 
 1. Go to the command line: `Win+R`, `CMD`
-2. Navigate to the RestApiTests folder of the project using `cd`
+2. Navigate to the `RestApiTests` folder of the project using `cd`
 3. Run the command: `allure open allure-report`
 
-### How to view Swagger coverage report:
+### How to view Swagger coverage reports:
 
-1. 
+1. Navigate to the `RestApiTests` folder
+2. Open the `swagger-coverage-report` folder
+3. Double-click the `swagger-coverage-admin-report.html` file or the `swagger-coverage-frontend-report.html` file

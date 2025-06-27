@@ -1,6 +1,7 @@
 package clients;
 
 import com.altenar.sb2.frontend.model.TopSportFullModelOutIEnumerableApiResult;
+import com.github.viclovsky.swagger.coverage.SwaggerCoverageRestAssured;
 
 import java.util.Map;
 import static io.restassured.RestAssured.given;
@@ -10,6 +11,7 @@ public class FrontEndClient {
 
     public static TopSportFullModelOutIEnumerableApiResult getTopSports(Map<String, String> queryParam) {
         return given()
+                .filter(new SwaggerCoverageRestAssured())
                 .baseUri(baseFrontendURI)
                 .queryParams(queryParam)
                 .when()

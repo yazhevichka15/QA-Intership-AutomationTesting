@@ -17,14 +17,14 @@ import java.util.List;
 public class HighlightManagerSteps {
     private static final int CONFIG_ID = 126;
     private static final int NORWEGIAN_LANGUAGE_ID = 66;
-    private static final int BEACH_VOLLEY_SPORT_ID = 82;
-    private static final int TEST_CHAMP_ID = 18828;
+    private static final int AMERICAN_FOOTBALL_SPORT_ID = 75;
+    private static final int TEST_CHAMP_ID = 4076;
     private static final int ORDER = 1;
 
-    private static final long TEST_EVENT_ID = 10439428;
+    private static final long TEST_EVENT_ID = 10393885;
 
-    private static final String DATE_FROM = "2025-06-26 23:00:00";
-    private static final String DATE_TO = "2025-06-26 12:00:00";
+    private static final String DATE_FROM = "2025-06-27 23:00:00";
+    private static final String DATE_TO = "2025-06-27 12:00:00";
 
     @Step("Create empty UpdateConfig request body")
     public static UpdateHighlightsConfigRequest createEmptyRequest() {
@@ -50,7 +50,7 @@ public class HighlightManagerSteps {
         languageTabs.add(languageTab0);
 
         SportRequestItem sport0 = new SportRequestItem();
-        sport0.setSportId(BEACH_VOLLEY_SPORT_ID);
+        sport0.setSportId(AMERICAN_FOOTBALL_SPORT_ID);
         sport0.setOrder(ORDER);
         sport0.setIsEnabled(true);
         sports.add(sport0);
@@ -69,7 +69,7 @@ public class HighlightManagerSteps {
         ArrayList<SportRequestItem> sports = new ArrayList<>();
 
         SportRequestItem sport0 = new SportRequestItem();
-        sport0.setSportId(BEACH_VOLLEY_SPORT_ID);
+        sport0.setSportId(AMERICAN_FOOTBALL_SPORT_ID);
         sport0.setOrder(ORDER);
         sport0.setIsEnabled(true);
         sports.add(sport0);
@@ -103,7 +103,7 @@ public class HighlightManagerSteps {
         languageTabs.add(languageTab0);
 
         SportRequestItem sport0 = new SportRequestItem();
-        sport0.setSportId(BEACH_VOLLEY_SPORT_ID);
+        sport0.setSportId(AMERICAN_FOOTBALL_SPORT_ID);
         sport0.setOrder(ORDER);
         sport0.setIsEnabled(true);
         sports.add(sport0);
@@ -130,7 +130,7 @@ public class HighlightManagerSteps {
         highlightsEvents.add(highlightsEvent0);
 
         SportRequestItem sport0 = new SportRequestItem();
-        sport0.setSportId(BEACH_VOLLEY_SPORT_ID);
+        sport0.setSportId(AMERICAN_FOOTBALL_SPORT_ID);
         sport0.setOrder(ORDER);
         sport0.setIsEnabled(true);
         sports.add(sport0);
@@ -157,7 +157,7 @@ public class HighlightManagerSteps {
         highlightsEvents.add(highlightsEvent0);
 
         SportRequestItem sport0 = new SportRequestItem();
-        sport0.setSportId(BEACH_VOLLEY_SPORT_ID);
+        sport0.setSportId(AMERICAN_FOOTBALL_SPORT_ID);
         sport0.setOrder(ORDER);
         sport0.setIsEnabled(true);
         sports.add(sport0);
@@ -184,7 +184,7 @@ public class HighlightManagerSteps {
         highlightsEvents.add(highlightsEvent0);
 
         SportRequestItem sport0 = new SportRequestItem();
-        sport0.setSportId(BEACH_VOLLEY_SPORT_ID);
+        sport0.setSportId(AMERICAN_FOOTBALL_SPORT_ID);
         sport0.setOrder(ORDER);
         sport0.setIsEnabled(true);
         sports.add(sport0);
@@ -202,7 +202,7 @@ public class HighlightManagerSteps {
         SearchHighlightsEventsRequest requestBody = new SearchHighlightsEventsRequest();
 
         List<Integer> sportIds = new ArrayList<>();
-        sportIds.add(BEACH_VOLLEY_SPORT_ID);
+        sportIds.add(AMERICAN_FOOTBALL_SPORT_ID);
 
         DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss");
         DateTime from = formatter.parseDateTime(DATE_FROM);

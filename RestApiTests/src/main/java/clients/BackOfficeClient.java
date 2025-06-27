@@ -11,6 +11,8 @@ import com.altenar.sb2.admin.model.SearchHighlightsEventsRequest;
 import ConfigReader.ConfigReader;
 
 import static io.restassured.RestAssured.given;
+
+import com.github.viclovsky.swagger.coverage.SwaggerCoverageRestAssured;
 import io.restassured.http.Cookies;
 
 public class BackOfficeClient {
@@ -19,6 +21,7 @@ public class BackOfficeClient {
 
     public static Cookies getCookies() {
         return given()
+                .filter(new SwaggerCoverageRestAssured())
                 .baseUri(baseAdminURI)
                 .param("UserName", configReader.getUsername())
                 .param("Password", configReader.getPassword())
@@ -32,6 +35,7 @@ public class BackOfficeClient {
 
     public static HighlightsConfigSettingsApiResult getConfigSettings(Map<String, String> queryParam, Cookies cookie) {
         return given()
+                .filter(new SwaggerCoverageRestAssured())
                 .baseUri(baseAdminURI)
                 .queryParams(queryParam)
                 .cookies(cookie)
@@ -45,6 +49,7 @@ public class BackOfficeClient {
 
     public static ApiResult updateConfig(UpdateHighlightsConfigRequest requestBody, Cookies cookie) {
         return given()
+                .filter(new SwaggerCoverageRestAssured())
                 .baseUri(baseAdminURI)
                 .contentType("application/json")
                 .cookies(cookie)
@@ -58,6 +63,7 @@ public class BackOfficeClient {
 
     public static EventCandidateItemListApiResult searchEvents(SearchHighlightsEventsRequest requestBody, Cookies cookie) {
         return given()
+                .filter(new SwaggerCoverageRestAssured())
                 .baseUri(baseAdminURI)
                 .contentType("application/json")
                 .cookies(cookie)
