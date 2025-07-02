@@ -8,8 +8,8 @@ This repository contains modules with automation QA internship homework assignme
 
 -   Java 21.0.7
 -   Gradle
--   Allure 2.34.0
 -   IntelliJ IDEA (Community Edition)
+-   Allure 2.34.0
 
 ---
 
@@ -31,7 +31,7 @@ A simple console-based finance tracking application that allows you to monitor a
 
 ### How to use
 
-Once the application is launched, a console menu will appear throughout its work
+Once the application is launched, a console menu will appear throughout its work. The application will prompt you for any required input
 
 You can:
 
@@ -42,7 +42,11 @@ You can:
 -   View expense statistics by category
 -   View the history of the last 10 financial transactions
 
-The application will prompt you for any required input
+### How to view Allure reports:
+
+1. Go to the command line: `Win+R`, `CMD`
+2. Navigate to the root folder of the project using `cd`
+3. Run the command: `allure open allure-report`
 
 ---
 
@@ -52,9 +56,9 @@ This is an implementation of test UI scripts for BO Highlight Manager module
 
 ### Project Structure
 
--   `BackOffice` — the main package, it contains the BackOfficePage class with a description of the BO page structure and the BackOfficeTests class with test scripts
--   `LoadConfig` — the helper package, it contains a ConfigLoader class with a single get method that helps to get personal data from the configuration file
--   `LogIn` — the helper package, it contains a LogInPage class describing the structure of the authorisation page
+-   `BackOffice` — the main package, it contains the `BackOfficePage` class with a description of the BO page structure and the `BackOfficeTests`, `BackOfficeSteps` classes with test scripts
+-   `LoadConfig` — the helper package, it contains a `ConfigLoader` class that helps to get personal data from the configuration file
+-   `LogIn` — the helper package, it contains a `LogInPage` class describing the structure of the authorisation page
 
 Key features that have been tested:
 
@@ -74,7 +78,7 @@ Key features that have been tested:
 2. Add values for `username` and `password` variables to the configuration file
 3. In IntelliJ IDEA open the Gradle window
 4. Select UI-Tests
-5. Select the `test` task (`Task/verification`) and double-click on it
+5. Select the task `Task/verification/test` and double-click on it
 
 It is best to do the tests one at a time
 
@@ -93,9 +97,10 @@ This is a REST API implementation of test scripts for the BO Highlight Manager m
 ### Project Structure
 
 -   `clients` — this package contains `BackOfficeClient` and `FrontEndClient` classes for interaction with backend and frontend services
--   `models` — this package includes packages with POJO-classes of some API (`GetConfigSettings`, `GetTopSports`, `SearchEvents`, `UpdateConfig`) for serialisation and deserialisation of data used in API requests and responses
 -   `ConfigReader` — helper package contains a class of the same name that reads user settings and parameters from the configuration file `config.properties`
--   `HighlightsManager` — main package contains classes for testing BO Highlights Manager functionality: `HighlightsManagerTests` and `HighlightsManagerSteps`
+-   `HighlightsManager` — main package contains classes for testing Highlights Manager functionality: `BackOfficeTests`, `FrontendTests` and `HighlightsManagerSteps`
+
+API models were generated using Open API and are located in the `build` folder
 
 Key features that have been tested:
 
@@ -115,13 +120,18 @@ Key features that have been tested:
 2. Add values for `username` and `password` variables to the configuration file
 3. In IntelliJ IDEA open the Gradle window
 4. Select RestApiTests
-5. Select the `test` task (`Task/verification`) and double-click on it
+5. Select the task `Task/verification/test` and double-click on it
 
 It is best to do the tests one at a time
 
 ### How to view Allure reports:
 
 1. Go to the command line: `Win+R`, `CMD`
-2. Navigate to the RestApiTests folder of the project using `cd`
+2. Navigate to the `RestApiTests` folder of the project using `cd`
 3. Run the command: `allure open allure-report`
 
+### How to view Swagger coverage reports:
+
+1. Navigate to the `RestApiTests` folder
+2. Open the `swagger-coverage-report` folder
+3. Double-click the `swagger-coverage-admin-report.html` file or the `swagger-coverage-frontend-report.html` file

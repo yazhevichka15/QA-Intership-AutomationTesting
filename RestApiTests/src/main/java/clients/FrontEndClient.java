@@ -1,21 +1,24 @@
 package clients;
 
-import models.GetTopSports.GetTopSportsResponse;
+import com.altenar.sb2.frontend.model.TopSportFullModelOutIEnumerableApiResult;
+import com.github.viclovsky.swagger.coverage.SwaggerCoverageRestAssured;
 
 import java.util.Map;
-
 import static io.restassured.RestAssured.given;
 
 public class FrontEndClient {
-    public static GetTopSportsResponse getTopSports(String baseURI, Map<String, String> queryParam) {
+    private static final String baseFrontendURI = "https://sb2frontend-altenar2-stage.biahosted.com";
+
+    public static TopSportFullModelOutIEnumerableApiResult getTopSports(Map<String, String> queryParam) {
         return given()
-                .baseUri(baseURI)
+                .filter(new SwaggerCoverageRestAssured())
+                .baseUri(baseFrontendURI)
                 .queryParams(queryParam)
                 .when()
                 .get("/api/Sportsbook/GetTopSports")
                 .then()
                 .statusCode(200)
                 .extract()
-                .response().as(GetTopSportsResponse.class);
+                .response().as(TopSportFullModelOutIEnumerableApiResult.class);
     }
 }

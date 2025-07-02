@@ -1,19 +1,42 @@
 package clients;
 
-import io.restassured.response.Response;
-import models.GetConfigSettings.*;
-import models.SearchEvents.SearchEventsRequest;
-import models.UpdateConfig.*;
-
 import java.util.Map;
 
+import com.altenar.sb2.admin.model.HighlightsConfigSettingsApiResult;
+import com.altenar.sb2.admin.model.ApiResult;
+import com.altenar.sb2.admin.model.UpdateHighlightsConfigRequest;
+import com.altenar.sb2.admin.model.EventCandidateItemListApiResult;
+import com.altenar.sb2.admin.model.SearchHighlightsEventsRequest;
+
+import ConfigReader.ConfigReader;
+
 import static io.restassured.RestAssured.given;
+
+import com.github.viclovsky.swagger.coverage.SwaggerCoverageRestAssured;
 import io.restassured.http.Cookies;
 
 public class BackOfficeClient {
-    public static GetConfigSettingsResponse getConfigSettings(String baseURI, Map<String, String> queryParam, Cookies cookie) {
+    private static final String baseAdminURI = "https://sb2admin-altenar2-stage.biahosted.com";
+    private static final ConfigReader configReader = new ConfigReader();
+
+    public static Cookies getCookies() {
         return given()
-                .baseUri(baseURI)
+                .filter(new SwaggerCoverageRestAssured())
+                .baseUri(baseAdminURI)
+                .param("UserName", configReader.getUsername())
+                .param("Password", configReader.getPassword())
+                .when()
+                .post("/Account/Login")
+                .then()
+                .extract()
+                .response()
+                .getDetailedCookies();
+    }
+
+    public static HighlightsConfigSettingsApiResult getConfigSettings(Map<String, String> queryParam, Cookies cookie) {
+        return given()
+                .filter(new SwaggerCoverageRestAssured())
+                .baseUri(baseAdminURI)
                 .queryParams(queryParam)
                 .cookies(cookie)
                 .when()
@@ -21,12 +44,13 @@ public class BackOfficeClient {
                 .then()
                 .statusCode(200)
                 .extract()
-                .response().as(GetConfigSettingsResponse.class);
+                .response().as(HighlightsConfigSettingsApiResult.class);
     }
 
-    public static Response updateConfig(String baseURI, UpdateConfigRequest requestBody, Cookies cookie) {
+    public static ApiResult updateConfig(UpdateHighlightsConfigRequest requestBody, Cookies cookie) {
         return given()
-                .baseUri(baseURI)
+                .filter(new SwaggerCoverageRestAssured())
+                .baseUri(baseAdminURI)
                 .contentType("application/json")
                 .cookies(cookie)
                 .body(requestBody)
@@ -34,12 +58,13 @@ public class BackOfficeClient {
                 .post("/Api/HighlightsManager/UpdateConfig")
                 .then()
                 .extract()
-                .response();
+                .response().as(ApiResult.class);
     }
 
-    public static Response searchEvents(String baseURI, SearchEventsRequest requestBody, Cookies cookie) {
+    public static EventCandidateItemListApiResult searchEvents(SearchHighlightsEventsRequest requestBody, Cookies cookie) {
         return given()
-                .baseUri(baseURI)
+                .filter(new SwaggerCoverageRestAssured())
+                .baseUri(baseAdminURI)
                 .contentType("application/json")
                 .cookies(cookie)
                 .body(requestBody)
@@ -47,6 +72,6 @@ public class BackOfficeClient {
                 .post("/Api/HighlightsManager/SearchEvents")
                 .then()
                 .extract()
-                .response();
+                .response().as(EventCandidateItemListApiResult.class);
     }
 }

@@ -1,0 +1,100 @@
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
+{{#isUri}}
+    import java.net.URI;
+{{/isUri}}
+{{#isNumber}}
+    import java.math.BigDecimal;
+{{/isNumber}}
+
+@JsonAdapter({{{classname}}}.Adapter.class)
+public enum {{{classname}}} {
+{{#allowableValues}}{{#enumVars}}
+    {{name}}({{{value}}}){{^-last}},{{/-last}}{{#-last}};{{/-last}}
+{{/enumVars}}{{/allowableValues}}
+
+private final {{{dataType}}} value;
+
+{{{classname}}}({{{dataType}}} value) {
+this.value = value;
+}
+
+@JsonValue
+public {{{dataType}}} getValue() {
+return value;
+}
+
+@Override
+public String toString() {
+return String.valueOf(value);
+}
+
+@JsonCreator
+public static {{{classname}}} fromValue({{{dataType}}} value) {
+for ({{{classname}}} b : {{{classname}}}.values()) {
+if (b.value.equals(value)) {
+return b;
+}
+}
+throw new IllegalArgumentException("Unexpected value '" + value + "'");
+}
+
+public static class Adapter extends TypeAdapter<{{{classname}}}> {
+@Override
+public void write(final JsonWriter jsonWriter, final {{{classname}}} enumeration) throws IOException {
+if (enumeration == null) {
+jsonWriter.nullValue();
+} else {
+jsonWriter.value(enumeration.getValue(){{#isUri}}.toASCIIString(){{/isUri}});
+}
+}
+
+@Override
+public {{{classname}}} read(final JsonReader jsonReader) throws IOException {
+if (jsonReader.peek() == com.google.gson.stream.JsonToken.NULL) {
+jsonReader.nextNull();
+return null;
+}
+
+{{#isInteger}}
+    int value = jsonReader.nextInt();
+    return {{{classname}}}.fromValue(value);
+{{/isInteger}}
+
+{{#isLong}}
+    long value = jsonReader.nextLong();
+    return {{{classname}}}.fromValue((int)value); // adjust if necessary
+{{/isLong}}
+
+{{#isFloat}}
+    double value = jsonReader.nextDouble();
+    return {{{classname}}}.fromValue((float)value);
+{{/isFloat}}
+
+{{#isDouble}}
+    double value = jsonReader.nextDouble();
+    return {{{classname}}}.fromValue(value);
+{{/isDouble}}
+
+{{#isNumber}}
+    BigDecimal value = new BigDecimal(jsonReader.nextString());
+    return {{{classname}}}.fromValue(value);
+{{/isNumber}}
+
+{{#isUri}}
+    URI value = URI.create(jsonReader.nextString());
+    return {{{classname}}}.fromValue(value);
+{{/isUri}}
+
+{{^isNumber}}{{^isUri}}{{^isInteger}}{{^isFloat}}
+    String value = jsonReader.nextString();
+    return {{{classname}}}.fromValue(value);
+{{/isFloat}}{{/isInteger}}{{/isUri}}{{/isNumber}}
+}
+}
+}

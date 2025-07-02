@@ -1,238 +1,217 @@
 package HighlightsManager;
 
-import ConfigReader.ConfigReader;
+import com.altenar.sb2.admin.model.UpdateHighlightsConfigRequest;
+import com.altenar.sb2.admin.model.LanguageTabRequestItem;
+import com.altenar.sb2.admin.model.SportRequestItem;
+import com.altenar.sb2.admin.model.HighlightsEventRequestItem;
+import com.altenar.sb2.admin.model.SearchHighlightsEventsRequest;
+
 import io.qameta.allure.Step;
-import io.restassured.http.Cookies;
-import models.SearchEvents.SearchEventsRequest;
-import models.UpdateConfig.*;
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 
 import java.util.ArrayList;
-
-import static io.restassured.RestAssured.given;
+import java.util.List;
 
 public class HighlightManagerSteps {
-    private final static ConfigReader configReader = new ConfigReader();
+    private static final int CONFIG_ID = 126;
+    private static final int NORWEGIAN_LANGUAGE_ID = 66;
+    private static final int AMERICAN_FOOTBALL_SPORT_ID = 75;
+    private static final int TEST_CHAMP_ID = 4076;
+    private static final int ORDER = 1;
 
-    @Step("Receive Highlight Manager login cookies")
-    public static Cookies getCookies(String baseAdminURI) {
-        return given()
-                .baseUri(baseAdminURI)
-                .param("UserName", configReader.getUsername())
-                .param("Password", configReader.getPassword())
-                .when()
-                .post("/Account/Login")
-                .then()
-                .extract()
-                .response()
-                .getDetailedCookies();
-    }
+    private static final long TEST_EVENT_ID = 10393885;
+
+    private static final String DATE_FROM = "2025-06-27 23:00:00";
+    private static final String DATE_TO = "2025-06-27 12:00:00";
 
     @Step("Create empty UpdateConfig request body")
-    public static UpdateConfigRequest createEmptyRequest() {
-        UpdateConfigRequest requestBody = new UpdateConfigRequest();
-        requestBody.configId = 126;
+    public static UpdateHighlightsConfigRequest createEmptyRequest() {
+        UpdateHighlightsConfigRequest requestBody = new UpdateHighlightsConfigRequest();
 
-        requestBody.highlightsEvents = new ArrayList<>();
-        requestBody.languageTabs = new ArrayList<>();
-        requestBody.sports = new ArrayList<>();
+        requestBody.setConfigId(CONFIG_ID);
+        requestBody.setHighlightsEvents(new ArrayList<>());
+        requestBody.setLanguageTabs(new ArrayList<>());
+        requestBody.setSports(new ArrayList<>());
 
         return requestBody;
     }
 
     @Step("Create UpdateConfig request body to add new language")
-    public static UpdateConfigRequest createAddLanguageRequest() {
-        UpdateConfigRequest requestBody = new UpdateConfigRequest();
-        requestBody.configId = 126;
+    public static UpdateHighlightsConfigRequest createAddLanguageRequest() {
+        UpdateHighlightsConfigRequest requestBody = new UpdateHighlightsConfigRequest();
+        ArrayList<LanguageTabRequestItem> languageTabs = new ArrayList<>();
+        ArrayList<SportRequestItem> sports = new ArrayList<>();
 
-        requestBody.highlightsEvents = new ArrayList<>();
-        requestBody.languageTabs = new ArrayList<>();
-        requestBody.sports = new ArrayList<>();
+        LanguageTabRequestItem languageTab0 = new LanguageTabRequestItem();
+        languageTab0.setLanguageId(NORWEGIAN_LANGUAGE_ID);
+        languageTab0.setHighlightsEvents(new ArrayList<>());
+        languageTabs.add(languageTab0);
 
-        LanguageTab languageTab0 = new LanguageTab();
-        languageTab0.languageId = 111;
-        languageTab0.highlightsEvents = new ArrayList<>();
-        requestBody.languageTabs.add(languageTab0);
+        SportRequestItem sport0 = new SportRequestItem();
+        sport0.setSportId(AMERICAN_FOOTBALL_SPORT_ID);
+        sport0.setOrder(ORDER);
+        sport0.setIsEnabled(true);
+        sports.add(sport0);
 
-        Sport sport0 = new Sport();
-        sport0.sportId = 99;
-        sport0.order = 1;
-        sport0.name = "Archery";
-        sport0.isEnabled = true;
-        sport0.count = 0;
-        sport0.categories = new ArrayList<>();
-        requestBody.sports.add(sport0);
+        requestBody.setConfigId(CONFIG_ID);
+        requestBody.setHighlightsEvents(new ArrayList<>());
+        requestBody.setLanguageTabs(languageTabs);
+        requestBody.setSports(sports);
 
         return requestBody;
     }
 
     @Step("Create UpdateConfig request body to delete the language")
-    public static UpdateConfigRequest createDeleteLanguageRequest() {
-        UpdateConfigRequest requestBody = new UpdateConfigRequest();
-        requestBody.configId = 126;
+    public static UpdateHighlightsConfigRequest createDeleteLanguageRequest() {
+        UpdateHighlightsConfigRequest requestBody = new UpdateHighlightsConfigRequest();
+        ArrayList<SportRequestItem> sports = new ArrayList<>();
 
-        requestBody.highlightsEvents = new ArrayList<>();
-        requestBody.languageTabs = new ArrayList<>();
-        requestBody.sports = new ArrayList<>();
+        SportRequestItem sport0 = new SportRequestItem();
+        sport0.setSportId(AMERICAN_FOOTBALL_SPORT_ID);
+        sport0.setOrder(ORDER);
+        sport0.setIsEnabled(true);
+        sports.add(sport0);
 
-        Sport sport0 = new Sport();
-        sport0.sportId = 99;
-        sport0.order = 1;
-        sport0.name = "Archery";
-        sport0.isEnabled = true;
-        sport0.count = 0;
-        sport0.categories = new ArrayList<>();
-        requestBody.sports.add(sport0);
+        requestBody.setConfigId(CONFIG_ID);
+        requestBody.setHighlightsEvents(new ArrayList<>());
+        requestBody.setLanguageTabs(new ArrayList<>());
+        requestBody.setSports(sports);
 
         return requestBody;
     }
 
     @Step("Create UpdateConfig request body to add new event to language")
-    public static UpdateConfigRequest createAddEventRequest() {
-        UpdateConfigRequest requestBody = new UpdateConfigRequest();
-        requestBody.configId = 126;
+    public static UpdateHighlightsConfigRequest createAddEventToLangRequest() {
+        UpdateHighlightsConfigRequest requestBody = new UpdateHighlightsConfigRequest();
+        ArrayList<LanguageTabRequestItem> languageTabs = new ArrayList<>();
+        ArrayList<SportRequestItem> sports = new ArrayList<>();
 
-        requestBody.highlightsEvents = new ArrayList<>();
-        requestBody.languageTabs = new ArrayList<>();
-        requestBody.sports = new ArrayList<>();
+        LanguageTabRequestItem languageTab0 = new LanguageTabRequestItem();
 
-        LanguageTab languageTab0 = new LanguageTab();
-        languageTab0.languageId = 66;
-        languageTab0.highlightsEvents = new ArrayList<>();
+        ArrayList<HighlightsEventRequestItem> langHighlightsEvents = new ArrayList<>();
+        HighlightsEventRequestItem highlightsEvent0 = new HighlightsEventRequestItem();
+        highlightsEvent0.setEventId(TEST_EVENT_ID);
+        highlightsEvent0.setOrder(ORDER);
+        highlightsEvent0.setIsPromo(false);
+        highlightsEvent0.setIsSafe(false);
+        langHighlightsEvents.add(highlightsEvent0);
 
-        HighlightsEvent event0 = new HighlightsEvent();
-        event0.eventId = 10383907;
-        event0.order = 1;
-        event0.isPromo = false;
-        event0.isSafe = false;
-        languageTab0.highlightsEvents.add(event0);
+        languageTab0.setLanguageId(NORWEGIAN_LANGUAGE_ID);
+        languageTab0.setHighlightsEvents(langHighlightsEvents);
+        languageTabs.add(languageTab0);
 
-        requestBody.languageTabs.add(languageTab0);
+        SportRequestItem sport0 = new SportRequestItem();
+        sport0.setSportId(AMERICAN_FOOTBALL_SPORT_ID);
+        sport0.setOrder(ORDER);
+        sport0.setIsEnabled(true);
+        sports.add(sport0);
 
-        Sport sport0 = new Sport();
-        sport0.sportId = 105;
-        sport0.order = 1;
-        sport0.name = "3x3 Basketball";
-        sport0.isEnabled = true;
-        sport0.categories = new ArrayList<>();
-        sport0.count = 1;
-        requestBody.sports.add(sport0);
+        requestBody.setConfigId(CONFIG_ID);
+        requestBody.setHighlightsEvents(new ArrayList<>());
+        requestBody.setLanguageTabs(languageTabs);
+        requestBody.setSports(sports);
 
         return requestBody;
     }
 
     @Step("Create UpdateConfig request body to set IsSafe status to the event")
-    public static UpdateConfigRequest createSetIsSafeRequest() {
-        UpdateConfigRequest requestBody = new UpdateConfigRequest();
-        requestBody.configId = 126;
+    public static UpdateHighlightsConfigRequest createSetIsSafeRequest() {
+        UpdateHighlightsConfigRequest requestBody = new UpdateHighlightsConfigRequest();
+        ArrayList<SportRequestItem> sports = new ArrayList<>();
+        ArrayList<HighlightsEventRequestItem> highlightsEvents = new ArrayList<>();
 
-        requestBody.highlightsEvents = new ArrayList<>();
-        requestBody.languageTabs = new ArrayList<>();
-        requestBody.sports = new ArrayList<>();
+        HighlightsEventRequestItem highlightsEvent0 = new HighlightsEventRequestItem();
+        highlightsEvent0.setEventId(TEST_EVENT_ID);
+        highlightsEvent0.setOrder(ORDER);
+        highlightsEvent0.setIsSafe(true);
+        highlightsEvent0.setIsPromo(false);
+        highlightsEvents.add(highlightsEvent0);
 
-        HighlightsEvent event0 = new HighlightsEvent();
-        event0.eventId = 10299752;
-        event0.order = 1;
-        event0.isPromo = false;
-        event0.isSafe = true;
-        requestBody.highlightsEvents.add(event0);
+        SportRequestItem sport0 = new SportRequestItem();
+        sport0.setSportId(AMERICAN_FOOTBALL_SPORT_ID);
+        sport0.setOrder(ORDER);
+        sport0.setIsEnabled(true);
+        sports.add(sport0);
 
-        Sport sport0 = new Sport();
-        sport0.sportId = 106;
-        sport0.order = 1;
-        sport0.name = "Aussie Rules";
-        sport0.isEnabled = true;
-        sport0.count = 2;
-        sport0.categories = new ArrayList<>();
-
-        Category category0 = new Category();
-        category0.categoryId = 1256;
-        category0.name = "Australia";
-        sport0.categories.add(category0);
-
-        requestBody.sports.add(sport0);
+        requestBody.setConfigId(CONFIG_ID);
+        requestBody.setHighlightsEvents(highlightsEvents);
+        requestBody.setLanguageTabs(new ArrayList<>());
+        requestBody.setSports(sports);
 
         return requestBody;
     }
 
     @Step("Create UpdateConfig request body to set IsPromo status to the event")
-    public static UpdateConfigRequest createSetIsPromoRequest() {
-        UpdateConfigRequest requestBody = new UpdateConfigRequest();
-        requestBody.configId = 126;
+    public static UpdateHighlightsConfigRequest createSetIsPromoRequest() {
+        UpdateHighlightsConfigRequest requestBody = new UpdateHighlightsConfigRequest();
+        ArrayList<SportRequestItem> sports = new ArrayList<>();
+        ArrayList<HighlightsEventRequestItem> highlightsEvents = new ArrayList<>();
 
-        requestBody.highlightsEvents = new ArrayList<>();
-        requestBody.languageTabs = new ArrayList<>();
-        requestBody.sports = new ArrayList<>();
+        HighlightsEventRequestItem highlightsEvent0 = new HighlightsEventRequestItem();
+        highlightsEvent0.setEventId(TEST_EVENT_ID);
+        highlightsEvent0.setOrder(ORDER);
+        highlightsEvent0.setIsSafe(false);
+        highlightsEvent0.setIsPromo(true);
+        highlightsEvents.add(highlightsEvent0);
 
-        HighlightsEvent event0 = new HighlightsEvent();
-        event0.eventId = 10299752;
-        event0.order = 1;
-        event0.isPromo = true;
-        event0.isSafe = false;
-        requestBody.highlightsEvents.add(event0);
+        SportRequestItem sport0 = new SportRequestItem();
+        sport0.setSportId(AMERICAN_FOOTBALL_SPORT_ID);
+        sport0.setOrder(ORDER);
+        sport0.setIsEnabled(true);
+        sports.add(sport0);
 
-        Sport sport0 = new Sport();
-        sport0.sportId = 106;
-        sport0.order = 1;
-        sport0.name = "Aussie Rules";
-        sport0.isEnabled = true;
-        sport0.count = 2;
-        sport0.categories = new ArrayList<>();
-
-        Category category0 = new Category();
-        category0.categoryId = 1256;
-        category0.name = "Australia";
-        sport0.categories.add(category0);
-
-        requestBody.sports.add(sport0);
+        requestBody.setConfigId(CONFIG_ID);
+        requestBody.setHighlightsEvents(highlightsEvents);
+        requestBody.setLanguageTabs(new ArrayList<>());
+        requestBody.setSports(sports);
 
         return requestBody;
     }
 
     @Step("Create UpdateConfig request body to set the IsSafe and IsPromo statuses to the event")
-    public static UpdateConfigRequest createDoubleStatusRequest() {
-        UpdateConfigRequest requestBody = new UpdateConfigRequest();
-        requestBody.configId = 126;
+    public static UpdateHighlightsConfigRequest createDoubleStatusRequest() {
+        UpdateHighlightsConfigRequest requestBody = new UpdateHighlightsConfigRequest();
+        ArrayList<SportRequestItem> sports = new ArrayList<>();
+        ArrayList<HighlightsEventRequestItem> highlightsEvents = new ArrayList<>();
 
-        requestBody.highlightsEvents = new ArrayList<>();
-        requestBody.languageTabs = new ArrayList<>();
-        requestBody.sports = new ArrayList<>();
+        HighlightsEventRequestItem highlightsEvent0 = new HighlightsEventRequestItem();
+        highlightsEvent0.setEventId(TEST_EVENT_ID);
+        highlightsEvent0.setOrder(ORDER);
+        highlightsEvent0.setIsSafe(true);
+        highlightsEvent0.setIsPromo(true);
+        highlightsEvents.add(highlightsEvent0);
 
-        HighlightsEvent event0 = new HighlightsEvent();
-        event0.eventId = 10299752;
-        event0.order = 1;
-        event0.isPromo = true;
-        event0.isSafe = true;
-        requestBody.highlightsEvents.add(event0);
+        SportRequestItem sport0 = new SportRequestItem();
+        sport0.setSportId(AMERICAN_FOOTBALL_SPORT_ID);
+        sport0.setOrder(ORDER);
+        sport0.setIsEnabled(true);
+        sports.add(sport0);
 
-        Sport sport0 = new Sport();
-        sport0.sportId = 106;
-        sport0.order = 1;
-        sport0.name = "Aussie Rules";
-        sport0.isEnabled = true;
-        sport0.count = 2;
-        sport0.categories = new ArrayList<>();
-
-        Category category0 = new Category();
-        category0.categoryId = 1256;
-        category0.name = "Australia";
-        sport0.categories.add(category0);
-
-        requestBody.sports.add(sport0);
+        requestBody.setConfigId(CONFIG_ID);
+        requestBody.setHighlightsEvents(highlightsEvents);
+        requestBody.setLanguageTabs(new ArrayList<>());
+        requestBody.setSports(sports);
 
         return requestBody;
     }
 
     @Step("Create UpdateConfig request body to search events with incorrect dates")
-    public static SearchEventsRequest createSearchEventsRequest() {
-        SearchEventsRequest requestBody = new SearchEventsRequest();
-        requestBody.champId = 50320;
+    public static SearchHighlightsEventsRequest createInvalidSearchEventsRequest() {
+        SearchHighlightsEventsRequest requestBody = new SearchHighlightsEventsRequest();
 
-        requestBody.dateFrom = "2025-06-20 12:00:00";
-        requestBody.dateTo = "2025-06-20 00:00:00";
+        List<Integer> sportIds = new ArrayList<>();
+        sportIds.add(AMERICAN_FOOTBALL_SPORT_ID);
 
-        requestBody.sportIds = new ArrayList<>();
-        Integer sportId0 = 106;
-        requestBody.sportIds.add(sportId0);
+        DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss");
+        DateTime from = formatter.parseDateTime(DATE_FROM);
+        DateTime to = formatter.parseDateTime(DATE_TO);
+
+        requestBody.setChampId(TEST_CHAMP_ID);
+        requestBody.setSportIds(sportIds);
+        requestBody.setDateFrom(from);
+        requestBody.setDateTo(to);
 
         return requestBody;
     }

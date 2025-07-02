@@ -1,1 +1,1 @@
-{"total":1,"items":[{"uid":"13b44d5e0d7bc9ab810570eb923974ce","name":"HighlightsManager.HighlightManagerTests","statistic":{"failed":0,"broken":0,"skipped":0,"passed":9,"unknown":0,"total":9}}]}
+{"total":2,"items":[{"uid":"daf004fcdead391092b0dcc37deacfa5","name":"HighlightsManager.BackOfficeTests","statistic":{"failed":0,"broken":0,"skipped":0,"passed":8,"unknown":0,"total":8}},{"uid":"991da8465a28e10f2928f3f6eed79952","name":"HighlightsManager.FrontEndTests","statistic":{"failed":0,"broken":0,"skipped":0,"passed":1,"unknown":0,"total":1}}]}
