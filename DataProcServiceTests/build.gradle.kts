@@ -20,6 +20,7 @@ repositories {
 dependencies {
     testImplementation(platform("org.junit:junit-bom:$junitVersion"))
     testImplementation("org.junit.jupiter:junit-jupiter")
+    testImplementation("io.qameta.allure:allure-junit5:2.24.0")
 
     testImplementation("org.apache.kafka:kafka-clients:$kafkaClientsVersion")
 

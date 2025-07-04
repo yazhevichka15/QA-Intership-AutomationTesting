@@ -1,5 +1,6 @@
 package tests;
 
+import io.qameta.allure.Step;
 import models.MarketDataRecord;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
@@ -44,12 +45,14 @@ class MarketProcessingIntegrationTests {
     private static Jdbi jdbi;
 
     @BeforeAll
+    @Step("JDBI initialisation")
     static void beforeAll() {
         jdbi = Jdbi.create(POSTGRES_JDBC_URL, POSTGRES_USER, POSTGRES_PASSWORD);
         jdbi.registerRowMapper(BeanMapper.factory(MarketDataRecord.class));
     }
 
     @BeforeEach
+    @Step("Configuring Kafka clients and cleaning the database")
     void setUp() {
         Properties producerProps = new Properties();
         producerProps.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, KAFKA_BOOTSTRAP_SERVERS);
@@ -73,13 +76,14 @@ class MarketProcessingIntegrationTests {
     }
 
     @AfterEach
+    @Step("Closing Kafka clients")
     void tearDown() {
         if (producer != null) producer.close();
         if (consumer != null) consumer.close();
     }
 
     @Test
-    @DisplayName("Should process market event and verify database and output topic")
+    @DisplayName("Should process valid market event, verify database and output topic")
     void testProcessMarketEvent() throws ExecutionException, InterruptedException, TimeoutException {
         String testEventJson = createTestEventJson();
 
@@ -130,7 +134,7 @@ class MarketProcessingIntegrationTests {
         for (ConsumerRecord<String, String> record : records) {
             actualMessages.add(record);
         }
-        actualMessages.removeIf(r -> !TEST_EVENT_ID.equals(r.key()));
+        actualMessages.removeIf(record -> !record.key().equals(TEST_EVENT_ID));
 
         assertFalse(records.isEmpty(), "No messages received from the \"processed_markets\" topic in 10 second");
 
@@ -143,7 +147,118 @@ class MarketProcessingIntegrationTests {
         );
     }
 
+    @Test
+    @DisplayName("Should process valid market report, verify database and output topic")
+    void testProcessMarketReport() throws ExecutionException, InterruptedException, TimeoutException {
+        String testReportJson = createTestReportJson();
+        ProducerRecord<String, String> sentRecord = new ProducerRecord<>(INPUT_TOPIC, TEST_EVENT_ID, testReportJson);
 
+        producer.send(sentRecord).get(10, SECONDS);
+
+        await().atMost(10, SECONDS)
+                .pollInterval(1, SECONDS)
+                .untilAsserted(() -> {
+                    String selectQuery = "SELECT event_id, market_type_id, selection_type_id, price, probability, status FROM market_data WHERE event_id = :eventId::bigint";
+                    List<MarketDataRecord> dbRecords = jdbi.withHandle(handle ->
+                        handle.createQuery(selectQuery)
+                                .bind("eventId", TEST_EVENT_ID)
+                                .mapTo(MarketDataRecord.class)
+                                .list()
+                    );
+
+                    assertEquals(3, dbRecords.size(), "Expected 3 records in the database, but was found: " + dbRecords.size());
+
+                    MarketDataRecord firstRecord = dbRecords.getFirst();
+                    assertEquals(TEST_EVENT_ID, firstRecord.getEventId());
+                    assertEquals(123L, firstRecord.getMarketTypeId());
+                    assertEquals(20L, firstRecord.getSelectionTypeId());
+                    assertEquals(21.5, firstRecord.getPrice());
+                    assertEquals(2.445, firstRecord.getProbability());
+                    assertEquals("active", firstRecord.getStatus());
+
+                    MarketDataRecord secondRecord = dbRecords.get(1);
+                    assertEquals(TEST_EVENT_ID, secondRecord.getEventId());
+                    assertEquals(100L, secondRecord.getMarketTypeId());
+                    assertEquals(15L, secondRecord.getSelectionTypeId());
+                    assertEquals(17.5, secondRecord.getPrice());
+                    assertEquals(2.055, secondRecord.getProbability());
+                    assertEquals("suspended", secondRecord.getStatus());
+
+                    MarketDataRecord thirdRecord = dbRecords.get(2);
+                    assertEquals(TEST_EVENT_ID, thirdRecord.getEventId());
+                    assertEquals(100L, thirdRecord.getMarketTypeId());
+                    assertEquals(30L, thirdRecord.getSelectionTypeId());
+                    assertEquals(31.5, thirdRecord.getPrice());
+                    assertEquals(3.445, thirdRecord.getProbability());
+                    assertEquals("win", thirdRecord.getStatus());
+               });
+
+        consumer.subscribe(Collections.singletonList(OUTPUT_TOPIC));
+
+        ConsumerRecords<String, String> outputRecords = consumer.poll(Duration.ofSeconds(10));
+        assertFalse(outputRecords.isEmpty(), "No messages received from the \"processed_markets\" topic in 10 second");
+
+        List<ConsumerRecord<String, String>> actualMessages = new ArrayList<>();
+        for (ConsumerRecord<String, String> outputRecord : outputRecords) {
+            actualMessages.add(outputRecord);
+        }
+        actualMessages.removeIf(record ->
+                !record.key().equals(TEST_EVENT_ID)
+        );
+
+        ConsumerRecord<String, String> receivedRecord = actualMessages.getLast();
+
+        assertEquals(TEST_EVENT_ID, receivedRecord.key());
+        assertEquals("""
+                {"id":12345,"is_success":true,"processed_markets_ids":[123,100],"processed_selections_ids":[20,15,30]}""",
+                receivedRecord.value());
+    }
+
+    @Test
+    @DisplayName("Should process invalid input, verify database and output topic with an error message")
+    void testProcessInvalidInput() throws ExecutionException, InterruptedException, TimeoutException {
+        String testReportJson = createInvalidJson();
+        ProducerRecord<String, String> sentRecord = new ProducerRecord<>(INPUT_TOPIC, TEST_EVENT_ID, testReportJson);
+
+        producer.send(sentRecord).get(10, SECONDS);
+
+        await().atMost(10, SECONDS)
+                .pollInterval(1, SECONDS)
+                .untilAsserted(() -> {
+                    String selectQuery = "SELECT event_id FROM market_data WHERE event_id = :eventId::bigint";
+                    List<Long> eventIds = jdbi.withHandle(handle ->
+                            handle.createQuery(selectQuery)
+                                    .bind("eventId", TEST_EVENT_ID)
+                                    .mapTo(Long.class)
+                                    .list()
+                    );
+
+                    assertTrue(eventIds.isEmpty(), "The table was expected to be empty, but records with event_id were found: " + eventIds.size());
+                });
+
+        consumer.subscribe(Collections.singletonList(OUTPUT_TOPIC));
+
+        ConsumerRecords<String, String> outputRecords = consumer.poll(Duration.ofSeconds(10));
+        assertFalse(outputRecords.isEmpty(), "No messages received from the \"processed_markets\" topic in 10 second");
+
+        List<ConsumerRecord<String, String>> actualMessages = new ArrayList<>();
+        for (ConsumerRecord<String, String> outputRecord : outputRecords) {
+            actualMessages.add(outputRecord);
+        }
+        actualMessages.removeIf(record ->
+                !record.key().equals(TEST_EVENT_ID)
+        );
+
+        ConsumerRecord<String, String> receivedRecord = actualMessages.getLast();
+
+        assertEquals(TEST_EVENT_ID, receivedRecord.key());
+        assertEquals("""
+                {"id":-922337203685477580,"is_success":false,"error_description":"Deserialization error. Received message with wrong format."}""",
+                receivedRecord.value()
+        );
+    }
+
+    @Step("Create MarketEvent JSON")
     private String createTestEventJson() {
         return """
                 {
@@ -184,15 +299,40 @@ class MarketProcessingIntegrationTests {
                 """;
     }
 
+    @Step("Create MarketReport JSON")
     private String createTestReportJson() {
         return """
-                
+                {
+                    "id": 12345,
+                    "message_type": "market_report",
+                    "markets": [{
+                        "market_type_id": 123,
+                        "selections": [{
+                            "selection_type_id": 20,
+                            "status": "active"
+                        }]
+                    }, {
+                        "market_type_id": 100,
+                        "selections": [{
+                            "selection_type_id": 15,
+                            "status": "suspended"
+                        }, {
+                            "selection_type_id": 30,
+                            "status": "win"
+                        }]
+                    }]
+                }
                 """;
     }
 
+    @Step("Create invalid JSON")
     private String createInvalidJson() {
         return """
-                
+                {
+                    "id": 12345,
+                    "message_type": -012345,
+                    "markets": []
+                }
                 """;
     }
 }
