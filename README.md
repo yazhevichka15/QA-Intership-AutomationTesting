@@ -4,12 +4,23 @@ This repository contains modules with automation QA internship homework assignme
 
 > Created for educational purposes to learn unit testing and improve java programming skills
 
-## Prerequisites:
+## Used stack:
 
--   Java 21.0.7
+-   Java 21
 -   Gradle
 -   IntelliJ IDEA (Community Edition)
--   Allure 2.34.0
+-   Lombok
+-   JUnit 5
+-   Allure
+-   Selenium
+-   Rest-Assured
+-   Open API
+-   Swagger / Swagger-coverage
+-   Docker / Docker Compose 
+-   Kafka
+-   PostgreSQL
+-   JDBI
+-   Awaitility
 
 ---
 
@@ -135,3 +146,42 @@ It is best to do the tests one at a time
 1. Navigate to the `RestApiTests` folder
 2. Open the `swagger-coverage-report` folder
 3. Double-click the `swagger-coverage-admin-report.html` file or the `swagger-coverage-frontend-report.html` file
+
+---
+
+## 4. Market Processing Services Integration Tests
+
+This is the implementation of integration test scripts for a market processing application
+
+### Project Structure
+
+-   `MarketDataRecord` — this class is a model for objects of the type `MarketData`, it contains fields from the table `market_data` and getters and setters
+-   `MarketProcessingIntegrationTests` — this class contains test scripts for a market processing application
+
+Key features that have been tested:
+
+-   processing valid MarketEvent input
+-   processing valid MarketReport input
+-   processing invalid input
+
+### Installation
+
+1. Clone this repository (or download ZIP)
+2. Open the project in IntelliJ IDEA
+3. Open the `DataProcServiceTests` module
+
+### How to run tests
+
+0. Run Docker Desktop
+1. Select the `SimpleFinanceTracker\DataProcServiceTests` module using `CMD` or `Terminal` in IntelliJ IDEA
+2. Enter the command `docker-compose up -d`
+3. Check the launch with the command `docker ps`
+4. In IntelliJ IDEA open the Gradle window and select `DataProcServiceTests`
+5. Select the task `Task\verification\test` and double-click on it
+
+If database connections are encountered, try the following:
+
+1. Interrupt the contenter's work with the command `docker-compose down -v`
+2. Check if the port for PostgreSQL is busy with the command `netstat -aon | findstr :5432`. If the port is busy, should to disable these processes
+3. In the file `MarketProcessingIntegrationTests.java` replace the value of variable `POSTGRES_USER` with `"user"` and the value of variable `POSTGRES_PASSWORD` with `"password"`. In the file `docker-compose.yml` replace the value of variables `POSTGRES_USER` and `SPRING_DATASOURCE_USERNAME` with `user` and the value of variables `POSTGRES_PASSWORD` and `SPRING_DATASOURCE_PASSWORD` with `password`
+4. Try running the tests again

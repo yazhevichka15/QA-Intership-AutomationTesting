@@ -18,9 +18,10 @@ out/
 
 ### QA ###
 /allure-results/
-/RestApiTests/allure-results/
 /UI-Tests/allure-results/
 /UI-Tests/src/test/resources/config.properties
+/RestApiTests/allure-results/
 /RestApiTests/src/test/resources/config.properties
 /RestApiTests/specs/
 /RestApiTests/swagger-coverage-output/
+/DataProcServiceTests/allure-results/
