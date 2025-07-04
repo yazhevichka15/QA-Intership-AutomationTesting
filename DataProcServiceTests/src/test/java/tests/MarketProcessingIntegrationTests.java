@@ -13,10 +13,7 @@ import org.apache.kafka.common.serialization.StringSerializer;
 import org.jdbi.v3.core.Jdbi;
 
 import org.jdbi.v3.core.mapper.reflect.BeanMapper;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 
 import java.time.Duration;
 import java.util.ArrayList;
@@ -31,12 +28,11 @@ import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.awaitility.Awaitility.await;
 import static org.junit.jupiter.api.Assertions.*;
 
-
 class MarketProcessingIntegrationTests {
 
     private static final String INPUT_TOPIC = "markets";
     private static final String OUTPUT_TOPIC = "processed_markets";
-    private static final String TEST_EVENT_ID = "123456789";
+    private static final String TEST_EVENT_ID = "12345";
 
     private static final String KAFKA_BOOTSTRAP_SERVERS = "localhost:29092";
     private static final String POSTGRES_JDBC_URL = "jdbc:postgresql://localhost:5432/mydatabase";
@@ -72,7 +68,7 @@ class MarketProcessingIntegrationTests {
         try {
             jdbi.useHandle(handle -> handle.execute("TRUNCATE TABLE market_data RESTART IDENTITY"));
         } catch (Exception e) {
-            fail("Не удалось очистить таблицу market_data. Убедитесь, что docker-compose запущен и сервис 'app' успешно применил миграции.", e);
+            fail("Failed to clear the market_data table. Make sure that docker-compose is running and the \"app\" service has successfully applied the migrations.", e);
         }
     }
 
@@ -83,7 +79,8 @@ class MarketProcessingIntegrationTests {
     }
 
     @Test
-    void shouldProcessMarketEventAndVerifyDatabaseAndOutputTopic() throws ExecutionException, InterruptedException, TimeoutException {
+    @DisplayName("Should process market event and verify database and output topic")
+    void testProcessMarketEvent() throws ExecutionException, InterruptedException, TimeoutException {
         String testEventJson = createTestEventJson();
 
         producer.send(new ProducerRecord<>(INPUT_TOPIC, TEST_EVENT_ID, testEventJson)).get(10, SECONDS);
@@ -92,29 +89,37 @@ class MarketProcessingIntegrationTests {
                 .pollInterval(500, TimeUnit.MILLISECONDS)
                 .untilAsserted(() -> {
                     List<MarketDataRecord> records = jdbi.withHandle(handle ->
-                            handle.createQuery("SELECT event_id, market_type_id, selection_type_id, price, probability, status FROM market_data WHERE event_id = :eventId::bigint ORDER BY selection_type_id")
+                            handle.createQuery("SELECT event_id, market_type_id, selection_type_id, price, probability, status FROM market_data WHERE event_id = :eventId::bigint")
                                     .bind("eventId", TEST_EVENT_ID)
                                     .mapTo(MarketDataRecord.class)
                                     .list()
                     );
 
-                    assertEquals(2, records.size(), "Ожидалось 2 записи в БД, но было найдено: " + records.size());
+                    assertEquals(3, records.size(), "Expected 3 records in the database, but was found: " + records.size());
 
                     MarketDataRecord firstRecord = records.getFirst();
                     assertEquals(TEST_EVENT_ID, firstRecord.getEventId());
                     assertEquals(1L, firstRecord.getMarketTypeId());
-                    assertEquals(1L, firstRecord.getSelectionTypeId());
-                    assertEquals(2.4, firstRecord.getPrice());
-                    assertEquals(1.55555, firstRecord.getProbability());
-                    assertEquals("suspended", firstRecord.getStatus());
+                    assertEquals(2L, firstRecord.getSelectionTypeId());
+                    assertEquals(2.15, firstRecord.getPrice());
+                    assertEquals(0.5, firstRecord.getProbability());
+                    assertEquals("active", firstRecord.getStatus());
 
                     MarketDataRecord secondRecord = records.get(1);
                     assertEquals(TEST_EVENT_ID, secondRecord.getEventId());
                     assertEquals(1L, secondRecord.getMarketTypeId());
-                    assertEquals(2L, secondRecord.getSelectionTypeId());
-                    assertEquals(4.7, secondRecord.getPrice());
-                    assertEquals(2.8888, secondRecord.getProbability());
+                    assertEquals(1L, secondRecord.getSelectionTypeId());
+                    assertEquals(4.64, secondRecord.getPrice());
+                    assertEquals(1.75, secondRecord.getProbability());
                     assertEquals("suspended", secondRecord.getStatus());
+
+                    MarketDataRecord thirdRecord = records.get(2);
+                    assertEquals(TEST_EVENT_ID, thirdRecord.getEventId());
+                    assertEquals(2L, thirdRecord.getMarketTypeId());
+                    assertEquals(3L, thirdRecord.getSelectionTypeId());
+                    assertEquals(0.0, thirdRecord.getPrice());
+                    assertEquals(0.0, thirdRecord.getProbability());
+                    assertEquals("win", thirdRecord.getStatus());
                 });
 
         consumer.subscribe(Collections.singletonList(OUTPUT_TOPIC));
@@ -125,40 +130,69 @@ class MarketProcessingIntegrationTests {
         for (ConsumerRecord<String, String> record : records) {
             actualMessages.add(record);
         }
+        actualMessages.removeIf(r -> !TEST_EVENT_ID.equals(r.key()));
 
-        assertFalse(records.isEmpty(), "Не получено ни одного сообщения из топика 'processed_markets' за 10 секунд");
+        assertFalse(records.isEmpty(), "No messages received from the \"processed_markets\" topic in 10 second");
 
         ConsumerRecord<String, String> receivedRecord = actualMessages.getLast();
 
         assertEquals(TEST_EVENT_ID, receivedRecord.key());
         assertEquals("""
-                {"id":123456789,"is_success":true,"unique_markets_ids":[1],"unique_selection_ids":[1,2]}""", receivedRecord.value());
+                {"id":12345,"is_success":true,"unique_markets_ids":[1,2],"unique_selection_ids":[1,2,3]}""",
+                receivedRecord.value()
+        );
     }
 
 
     private String createTestEventJson() {
         return """
                 {
-                    "id": 123456789,
-                    "status": "active",
-                    "message_type": "market_event",
-                    "markets": [{
-                        "specifiers": [
-                            {"name": "total_base", "value": 5.5},
-                            {"name": "match_phase", "value": 1.0}
-                        ],
-                        "selections": [{
-                            "status": 1,
-                            "odds": {"price": 2.4, "probability": 1.55555},
-                            "selection_type_id": 1
-                        }, {
-                            "status": 1,
-                            "odds": {"price": 4.7, "probability": 2.8888},
-                            "selection_type_id": 2
-                        }],
-                        "market_type_id": 1
-                    }]
+                   "id": 12345,
+                   "message_type": "market_event",
+                   "status": "active",
+                   "markets": [{
+                       "market_type_id": 1,
+                       "specifiers": [],
+                       "selections": [{
+                           "selection_type_id": 2,
+                           "status": 0,
+                           "odds": {
+                               "price": 2.15,
+                               "probability": 0.5
+                           }
+                       }, {
+                           "selection_type_id": 1,
+                           "status": 1,
+                           "odds": {
+                               "price": 4.64,
+                               "probability": 1.75
+                           }
+                       }]
+                   }, {
+                       "market_type_id": 2,
+                       "specifiers": [],
+                       "selections": [{
+                           "selection_type_id": 3,
+                           "status": 3,
+                           "odds": {
+                               "price": 1.22,
+                               "probability": 0.01
+                           }
+                       }]
+                   }]
                 }
+                """;
+    }
+
+    private String createTestReportJson() {
+        return """
+                
+                """;
+    }
+
+    private String createInvalidJson() {
+        return """
+                
                 """;
     }
 }
