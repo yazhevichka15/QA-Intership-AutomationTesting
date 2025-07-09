@@ -1,5 +1,8 @@
 package tests;
 
+import annotations.ExtendCleanDatabaseAndTopics;
+import annotations.TestDependency;
+
 import io.qameta.allure.Step;
 import models.MarketDataRecord;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
@@ -29,19 +32,27 @@ import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.awaitility.Awaitility.await;
 import static org.junit.jupiter.api.Assertions.*;
 
+@ExtendCleanDatabaseAndTopics
 class MarketProcessingIntegrationTests {
 
+    @TestDependency
     private static final String INPUT_TOPIC = "markets";
-    private static final String OUTPUT_TOPIC = "processed_markets";
-    private static final String TEST_EVENT_ID = "12345";
 
+    @TestDependency
+    private static final String OUTPUT_TOPIC = "processed_markets";
+
+    @TestDependency
     private static final String KAFKA_BOOTSTRAP_SERVERS = "localhost:29092";
+
     private static final String POSTGRES_JDBC_URL = "jdbc:postgresql://localhost:5432/mydatabase";
     private static final String POSTGRES_USER = "postgres";
     private static final String POSTGRES_PASSWORD = "11037";
+    private static final String TEST_EVENT_ID = "12345";
 
     private KafkaProducer<String, String> producer;
     private KafkaConsumer<String, String> consumer;
+
+    @TestDependency
     private static Jdbi jdbi;
 
     @BeforeAll
@@ -52,7 +63,7 @@ class MarketProcessingIntegrationTests {
     }
 
     @BeforeEach
-    @Step("Configuring Kafka clients and cleaning the database")
+    @Step("Configuring Kafka clients")
     void setUp() {
         Properties producerProps = new Properties();
         producerProps.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, KAFKA_BOOTSTRAP_SERVERS);
@@ -67,12 +78,6 @@ class MarketProcessingIntegrationTests {
         consumerProps.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
         consumerProps.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
         consumer = new KafkaConsumer<>(consumerProps);
-
-        try {
-            jdbi.useHandle(handle -> handle.execute("TRUNCATE TABLE market_data RESTART IDENTITY"));
-        } catch (Exception e) {
-            fail("Failed to clear the market_data table. Make sure that docker-compose is running and the \"app\" service has successfully applied the migrations.", e);
-        }
     }
 
     @AfterEach
@@ -85,23 +90,25 @@ class MarketProcessingIntegrationTests {
     @Test
     @DisplayName("Should process valid market event, verify database and output topic")
     void testProcessMarketEvent() throws ExecutionException, InterruptedException, TimeoutException {
-        String testEventJson = createTestEventJson();
+        String testReportJson = createTestEventJson();
+        ProducerRecord<String, String> sentRecord = new ProducerRecord<>(INPUT_TOPIC, TEST_EVENT_ID, testReportJson);
 
-        producer.send(new ProducerRecord<>(INPUT_TOPIC, TEST_EVENT_ID, testEventJson)).get(10, SECONDS);
+        producer.send(sentRecord).get(10, SECONDS);
 
         await().atMost(15, SECONDS)
                 .pollInterval(500, TimeUnit.MILLISECONDS)
                 .untilAsserted(() -> {
-                    List<MarketDataRecord> records = jdbi.withHandle(handle ->
-                            handle.createQuery("SELECT event_id, market_type_id, selection_type_id, price, probability, status FROM market_data WHERE event_id = :eventId::bigint")
+                    String selectQuery = "SELECT event_id, market_type_id, selection_type_id, price, probability, status FROM market_data WHERE event_id = :eventId::bigint";
+                    List<MarketDataRecord> dbRecords = jdbi.withHandle(handle ->
+                            handle.createQuery(selectQuery)
                                     .bind("eventId", TEST_EVENT_ID)
                                     .mapTo(MarketDataRecord.class)
                                     .list()
                     );
 
-                    assertEquals(3, records.size(), "Expected 3 records in the database, but was found: " + records.size());
+                    assertEquals(3, dbRecords.size(), "Expected 3 records in the database, but was found: " + dbRecords.size());
 
-                    MarketDataRecord firstRecord = records.getFirst();
+                    MarketDataRecord firstRecord = dbRecords.getFirst();
                     assertEquals(TEST_EVENT_ID, firstRecord.getEventId());
                     assertEquals(1L, firstRecord.getMarketTypeId());
                     assertEquals(2L, firstRecord.getSelectionTypeId());
@@ -109,7 +116,7 @@ class MarketProcessingIntegrationTests {
                     assertEquals(0.5, firstRecord.getProbability());
                     assertEquals("active", firstRecord.getStatus());
 
-                    MarketDataRecord secondRecord = records.get(1);
+                    MarketDataRecord secondRecord = dbRecords.get(1);
                     assertEquals(TEST_EVENT_ID, secondRecord.getEventId());
                     assertEquals(1L, secondRecord.getMarketTypeId());
                     assertEquals(1L, secondRecord.getSelectionTypeId());
@@ -117,7 +124,7 @@ class MarketProcessingIntegrationTests {
                     assertEquals(1.75, secondRecord.getProbability());
                     assertEquals("suspended", secondRecord.getStatus());
 
-                    MarketDataRecord thirdRecord = records.get(2);
+                    MarketDataRecord thirdRecord = dbRecords.get(2);
                     assertEquals(TEST_EVENT_ID, thirdRecord.getEventId());
                     assertEquals(2L, thirdRecord.getMarketTypeId());
                     assertEquals(3L, thirdRecord.getSelectionTypeId());
@@ -128,15 +135,16 @@ class MarketProcessingIntegrationTests {
 
         consumer.subscribe(Collections.singletonList(OUTPUT_TOPIC));
 
-        ConsumerRecords<String, String> records = consumer.poll(Duration.ofSeconds(10));
+        ConsumerRecords<String, String> outputRecords = consumer.poll(Duration.ofSeconds(10));
+        assertFalse(outputRecords.isEmpty(), "No messages received from the \"processed_markets\" topic in 10 second");
+
         List<ConsumerRecord<String, String>> actualMessages = new ArrayList<>();
-
-        for (ConsumerRecord<String, String> record : records) {
-            actualMessages.add(record);
+        for (ConsumerRecord<String, String> outputRecord : outputRecords) {
+            actualMessages.add(outputRecord);
         }
-        actualMessages.removeIf(record -> !record.key().equals(TEST_EVENT_ID));
-
-        assertFalse(records.isEmpty(), "No messages received from the \"processed_markets\" topic in 10 second");
+        actualMessages.removeIf(record ->
+                !record.key().equals(TEST_EVENT_ID)
+        );
 
         ConsumerRecord<String, String> receivedRecord = actualMessages.getLast();
 
