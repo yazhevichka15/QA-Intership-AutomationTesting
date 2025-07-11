@@ -31,8 +31,8 @@ public class MarketsGenerator {
     private final ErrorMessage errorMessage;
 
     public MarketsGenerator(long id) {
-        this.marketEvent = createMarketEvent(id, 1);
-        this.marketReport = createMarketReport(id, 1);
+        this.marketEvent = createMarketEvent(id, 2);
+        this.marketReport = createMarketReport(id, 2);
 
         this.marketDataEntities = convertMarketEventToMarketData();
         this.marketDataReportEntities = convertMarketReportToMarketData();
