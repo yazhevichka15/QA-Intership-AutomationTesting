@@ -13,11 +13,11 @@ import org.junit.jupiter.api.extension.ExtensionContext;
 import java.util.*;
 import java.util.concurrent.*;
 
+import static utils.TestConstants.KAFKA_BOOTSTRAP_SERVERS;
+
 public class CleanTopicsExtension implements BeforeAllCallback, BeforeEachCallback, AfterAllCallback {
     private AdminClient adminClient;
     private List<String> topicsToClean;
-
-    private String KAFKA_BOOTSTRAP_SERVERS = "localhost:29092";
 
     @Override
     public void beforeAll(ExtensionContext context) throws Exception {

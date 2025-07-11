@@ -8,6 +8,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import models.MarketDataEntity;
+import models.input.SelectionsStatuses;
 import models.input.event.*;
 import models.input.report.*;
 import models.output.ErrorMessage;

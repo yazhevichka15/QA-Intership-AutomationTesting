@@ -8,12 +8,10 @@ import org.junit.jupiter.api.extension.BeforeEachCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
 
 import static org.junit.jupiter.api.Assertions.fail;
+import static utils.TestConstants.*;
 
 public class CleanDatabaseExtension implements BeforeAllCallback, BeforeEachCallback {
 
-    private static final String POSTGRES_JDBC_URL = "jdbc:postgresql://localhost:5432/mydatabase";
-    private static final String POSTGRES_USER = "postgres";
-    private static final String POSTGRES_PASSWORD = "11037";
     private static Jdbi jdbi;
 
     @Override
