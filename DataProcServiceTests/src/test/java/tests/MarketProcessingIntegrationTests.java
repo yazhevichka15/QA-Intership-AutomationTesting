@@ -5,7 +5,6 @@ import annotations.CleanUpKafkaTopics;
 
 import steps.*;
 import utils.*;
-
 import models.MarketDataRecord;
 
 import org.apache.kafka.clients.consumer.ConsumerRecord;
@@ -20,7 +19,7 @@ class MarketProcessingIntegrationTests {
 
     private static final String TEST_EVENT_ID = RandomUtils.getRandomLongNumber(1, 100000).toString();
 
-    private final MarketsGenerator marketsGenerator = new MarketsGenerator(Long.parseLong(TEST_EVENT_ID));
+    private final MarketsGenerator marketsGenerator = new MarketsGenerator(TEST_EVENT_ID);
     private final KafkaSteps kafkaSteps = new KafkaSteps();
     private final DbSteps dbSteps = new DbSteps();
     private final AssertSteps assertSteps = new AssertSteps();

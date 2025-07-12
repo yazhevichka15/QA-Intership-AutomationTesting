@@ -62,8 +62,8 @@ public class KafkaSteps {
         ConsumerRecords<String, String> outputRecords = consumer.poll(Duration.ofSeconds(10));
         assertFalse(outputRecords.isEmpty(), "No messages received from the \"" + topic + "\" topic in 10 second");
 
-        List<ConsumerRecord<String, String>> actualMessages = StreamSupport.stream(
-                        outputRecords.records(topic).spliterator(), false)
+        List<ConsumerRecord<String, String>> actualMessages = StreamSupport
+                .stream(outputRecords.records(topic).spliterator(), false)
                 .filter(record -> record.key().equals(key))
                 .toList();
 

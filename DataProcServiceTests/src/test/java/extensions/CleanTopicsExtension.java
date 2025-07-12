@@ -16,6 +16,7 @@ import java.util.concurrent.*;
 import static utils.TestConstants.KAFKA_BOOTSTRAP_SERVERS;
 
 public class CleanTopicsExtension implements BeforeAllCallback, BeforeEachCallback, AfterAllCallback {
+
     private AdminClient adminClient;
     private List<String> topicsToClean;
 

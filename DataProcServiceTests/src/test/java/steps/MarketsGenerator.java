@@ -31,9 +31,9 @@ public class MarketsGenerator {
     private final ProcessedReportMarkets processedReportMarketsMessage;
     private final ErrorMessage errorMessage;
 
-    public MarketsGenerator(long id) {
-        this.marketEvent = createMarketEvent(id, 1);
-        this.marketReport = createMarketReport(id, 1);
+    public MarketsGenerator(String id) {
+        this.marketEvent = createMarketEvent(Long.parseLong(id), 1);
+        this.marketReport = createMarketReport(Long.parseLong(id), 1);
 
         this.marketDataRecords = convertMarketEventToMarketData();
         this.marketDataReportRecords = convertMarketReportToMarketData();
@@ -166,6 +166,7 @@ public class MarketsGenerator {
                             Integer statusInt = selection.getStatus();
                             SelectionsStatuses status = SelectionsStatuses.of(statusInt);
                             Odds odds = selection.getOdds();
+
                             Double price = status.isFinal() ? null : odds.getPrice();
                             Double probability = status.isFinal() ? null : odds.getProbability();
 
@@ -238,7 +239,11 @@ public class MarketsGenerator {
                 .map(ReportSelection::getSelectionTypeId)
                 .toList();
 
-        return new ProcessedReportMarkets(reportId, processedMarketsIds, processedSelectionsIds);
+        return new ProcessedReportMarkets(
+                reportId,
+                processedMarketsIds,
+                processedSelectionsIds
+        );
     }
 
     private ErrorMessage getErrorMessage() {

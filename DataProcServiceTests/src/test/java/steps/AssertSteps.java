@@ -19,7 +19,7 @@ public class AssertSteps {
             MarketDataRecord expected = expectedRecords.stream()
                     .filter(e ->
                             e.getMarketTypeId().equals(actual.getMarketTypeId()) &&
-                                    e.getSelectionTypeId().equals(actual.getSelectionTypeId()))
+                            e.getSelectionTypeId().equals(actual.getSelectionTypeId()))
                     .findFirst()
                     .orElseThrow(() ->
                             new AssertionError("Expected record not found"));
@@ -45,7 +45,7 @@ public class AssertSteps {
             MarketDataRecord expected = expectedRecords.stream()
                     .filter(e ->
                             e.getMarketTypeId().equals(actual.getMarketTypeId()) &&
-                                    e.getSelectionTypeId().equals(actual.getSelectionTypeId()))
+                            e.getSelectionTypeId().equals(actual.getSelectionTypeId()))
                     .findFirst()
                     .orElseThrow(() -> new AssertionError("Expected record not found"));
 
