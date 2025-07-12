@@ -18,7 +18,7 @@ import utils.*;
 
 @Getter
 public class MarketsGenerator {
-    private static final ObjectMapper MAPPER = new ObjectMapper()
+    protected static final ObjectMapper MAPPER = new ObjectMapper()
             .enable(SerializationFeature.INDENT_OUTPUT);
 
     private final MarketEvent marketEvent;
@@ -100,7 +100,7 @@ public class MarketsGenerator {
         );
     }
 
-    private static Specifier createSpecifier() {
+    protected static Specifier createSpecifier() {
         return new Specifier(
                 RandomUtils.getRandomString(10),
                 RandomUtils.getRandomDouble(0.1, 10.0));
@@ -149,7 +149,7 @@ public class MarketsGenerator {
         );
     }
 
-    private static Odds createOdds() {
+    protected static Odds createOdds() {
         return new Odds(
                 RandomUtils.getRandomDouble(1.5, 10.5),
                 RandomUtils.getRandomDouble(0.01, 0.99)
