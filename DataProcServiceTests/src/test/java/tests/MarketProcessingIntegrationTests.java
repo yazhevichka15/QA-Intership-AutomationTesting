@@ -6,7 +6,6 @@ import annotations.CleanUpKafkaTopics;
 import steps.*;
 import utils.*;
 
-import models.MarketDataEntity;
 import models.MarketDataRecord;
 
 import org.apache.kafka.clients.consumer.ConsumerRecord;
@@ -37,7 +36,7 @@ class MarketProcessingIntegrationTests {
     void testProcessMarketEvent() {
         String marketEventJson = marketsGenerator.getMarketEventAsJson();
         String expectedProcessedMarketsJson = marketsGenerator.getProcessedMarketsAsJson();
-        List<MarketDataEntity> expectedMarketData = marketsGenerator.getMarketDataEntities();
+        List<MarketDataRecord> expectedMarketData = marketsGenerator.getMarketDataRecords();
 
         kafkaSteps.sendMessageToTopic(INPUT_TOPIC, TEST_EVENT_ID, marketEventJson);
 
@@ -57,7 +56,7 @@ class MarketProcessingIntegrationTests {
     void testProcessMarketReport() {
         String marketReportJson = marketsGenerator.getMarketReportAsJson();
         String expectedProcessedReportMarketsJson = marketsGenerator.getProcessedReportMarketsAsJson();
-        List<MarketDataEntity> expectedMarketData = marketsGenerator.getMarketDataReportEntities();
+        List<MarketDataRecord> expectedMarketData = marketsGenerator.getMarketDataReportRecords();
 
         kafkaSteps.sendMessageToTopic(INPUT_TOPIC, TEST_EVENT_ID, marketReportJson);
 

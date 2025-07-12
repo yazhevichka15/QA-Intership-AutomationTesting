@@ -1,6 +1,5 @@
 package steps;
 
-import models.MarketDataEntity;
 import models.MarketDataRecord;
 import models.input.SelectionsStatuses;
 import utils.JsonTestUtils;
@@ -13,25 +12,26 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class AssertSteps {
+
     @Step("Checking expected {expectedRecords} and received {actualRecords} database records for MarketEvent")
-    public void assertMarketDataRecords(List<MarketDataRecord> actualRecords, List<MarketDataEntity> expectedRecords) {
+    public void assertMarketDataRecords(List<MarketDataRecord> actualRecords, List<MarketDataRecord> expectedRecords) {
         actualRecords.forEach(actual -> {
-            MarketDataEntity expected = expectedRecords.stream()
+            MarketDataRecord expected = expectedRecords.stream()
                     .filter(e ->
                             e.getMarketTypeId().equals(actual.getMarketTypeId()) &&
-                            e.getSelectionTypeId().equals(actual.getSelectionTypeId()))
+                                    e.getSelectionTypeId().equals(actual.getSelectionTypeId()))
                     .findFirst()
                     .orElseThrow(() ->
                             new AssertionError("Expected record not found"));
 
-            assertEquals(expected.getEventId().toString(), actual.getEventId());
+            assertEquals(expected.getEventId(), actual.getEventId());
             assertEquals(expected.getMarketTypeId(), actual.getMarketTypeId());
             assertEquals(expected.getSelectionTypeId(), actual.getSelectionTypeId());
             assertEquals(expected.getStatus(), actual.getStatus());
 
             if (SelectionsStatuses.fromString(actual.getStatus()).isFinal()) {
-                assertEquals(0.0, actual.getPrice(), 0.001);
-                assertEquals(0.0, actual.getProbability(), 0.001);
+                assertNull(actual.getPrice());
+                assertNull(actual.getProbability());
             } else {
                 assertEquals(expected.getPrice(), actual.getPrice(), 0.001);
                 assertEquals(expected.getProbability(), actual.getProbability(), 0.001);
@@ -40,18 +40,16 @@ public class AssertSteps {
     }
 
     @Step("Checking expected {expectedRecords} and received {actualRecords} database records for MarketReport")
-    public void assertMarketDataReportRecords(List<MarketDataRecord> actualRecords, List<MarketDataEntity> expectedRecords) {
+    public void assertMarketDataReportRecords(List<MarketDataRecord> actualRecords, List<MarketDataRecord> expectedRecords) {
         actualRecords.forEach(actual -> {
-            MarketDataEntity expected = expectedRecords.stream()
+            MarketDataRecord expected = expectedRecords.stream()
                     .filter(e ->
                             e.getMarketTypeId().equals(actual.getMarketTypeId()) &&
-                            e.getSelectionTypeId().equals(actual.getSelectionTypeId())
-                    )
+                                    e.getSelectionTypeId().equals(actual.getSelectionTypeId()))
                     .findFirst()
-                    .orElseThrow(() -> new AssertionError(
-                            "Expected record not found"));
+                    .orElseThrow(() -> new AssertionError("Expected record not found"));
 
-            assertEquals(expected.getEventId().toString(), actual.getEventId());
+            assertEquals(expected.getEventId(), actual.getEventId());
             assertEquals(expected.getMarketTypeId(), actual.getMarketTypeId());
             assertEquals(expected.getSelectionTypeId(), actual.getSelectionTypeId());
             assertEquals(expected.getStatus(), actual.getStatus());

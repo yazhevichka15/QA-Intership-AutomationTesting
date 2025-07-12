@@ -1,58 +1,27 @@
 package models;
 
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
 public class MarketDataRecord {
     private String eventId;
-    private long marketTypeId;
-    private long selectionTypeId;
-    private double price;
-    private double probability;
+    private Long marketTypeId;
+    private Long selectionTypeId;
+    private Double price;
+    private Double probability;
     private String status;
 
-    public String getEventId() {
-        return eventId;
-    }
+    public MarketDataRecord() {}
 
-    public void setEventId(String eveintId) {
-        this.eventId = eveintId;
-    }
-
-    public long getMarketTypeId() {
-        return marketTypeId;
-    }
-
-    public void setMarketTypeId(long marketTypeId) {
+    public MarketDataRecord(String eventId, Long marketTypeId, Long selectionTypeId,
+                            Double price, Double probability, String status) {
+        this.eventId = eventId;
         this.marketTypeId = marketTypeId;
-    }
-
-    public long getSelectionTypeId() {
-        return selectionTypeId;
-    }
-
-    public void setSelectionTypeId(long selectionTypeId) {
         this.selectionTypeId = selectionTypeId;
-    }
-
-    public double getPrice() {
-        return price;
-    }
-
-    public void setPrice(double price) {
         this.price = price;
-    }
-
-    public double getProbability() {
-        return probability;
-    }
-
-    public void setProbability(double probability) {
         this.probability = probability;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
         this.status = status;
     }
 }

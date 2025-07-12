@@ -7,7 +7,7 @@ import lombok.Getter;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import models.MarketDataEntity;
+import models.MarketDataRecord;
 import models.input.SelectionsStatuses;
 import models.input.event.*;
 import models.input.report.*;
@@ -24,19 +24,19 @@ public class MarketsGenerator {
     private final MarketEvent marketEvent;
     private final MarketReport marketReport;
 
-    private final List<MarketDataEntity> marketDataEntities;
-    private final List<MarketDataEntity> marketDataReportEntities;
+    private final List<MarketDataRecord> marketDataRecords;
+    private final List<MarketDataRecord> marketDataReportRecords;
 
     private final ProcessedMarkets processedMarketsMessage;
     private final ProcessedReportMarkets processedReportMarketsMessage;
     private final ErrorMessage errorMessage;
 
     public MarketsGenerator(long id) {
-        this.marketEvent = createMarketEvent(id, 2);
-        this.marketReport = createMarketReport(id, 2);
+        this.marketEvent = createMarketEvent(id, 1);
+        this.marketReport = createMarketReport(id, 1);
 
-        this.marketDataEntities = convertMarketEventToMarketData();
-        this.marketDataReportEntities = convertMarketReportToMarketData();
+        this.marketDataRecords = convertMarketEventToMarketData();
+        this.marketDataReportRecords = convertMarketReportToMarketData();
 
         this.processedMarketsMessage = getProcessedMarketsMessage();
         this.processedReportMarketsMessage = getProcessedReportMarketsMessage();
@@ -156,7 +156,7 @@ public class MarketsGenerator {
         );
     }
 
-    private List<MarketDataEntity> convertMarketEventToMarketData() {
+    private List<MarketDataRecord> convertMarketEventToMarketData() {
         Long eventId = this.marketEvent.getId();
         return this.marketEvent.getMarkets()
                 .stream()
@@ -169,8 +169,8 @@ public class MarketsGenerator {
                             Double price = status.isFinal() ? null : odds.getPrice();
                             Double probability = status.isFinal() ? null : odds.getProbability();
 
-                            return new MarketDataEntity(
-                                    eventId,
+                            return new MarketDataRecord(
+                                    eventId.toString(),
                                     market.getMarketTypeId(),
                                     selection.getSelectionTypeId(),
                                     price,
@@ -181,7 +181,7 @@ public class MarketsGenerator {
                 .toList();
     }
 
-    private List<MarketDataEntity> convertMarketReportToMarketData() {
+    private List<MarketDataRecord> convertMarketReportToMarketData() {
         Long eventId = this.marketReport.getId();
         return this.marketReport.getMarkets()
                 .stream()
@@ -195,8 +195,8 @@ public class MarketsGenerator {
                             Double price = (selectionTypeId % 2 == 0 ? 1.5 + selectionTypeId : 2.5 + selectionTypeId);
                             Double probability = (selectionTypeId % 2 == 0 ? 0.445 + (selectionTypeId / 10.0) : 0.555 + (selectionTypeId / 10.0));
 
-                            return new MarketDataEntity(
-                                    eventId,
+                            return new MarketDataRecord(
+                                    eventId.toString(),
                                     market.getMarketTypeId(),
                                     selectionTypeId,
                                     price,
@@ -209,13 +209,14 @@ public class MarketsGenerator {
 
     private ProcessedMarkets getProcessedMarketsMessage() {
         Long eventId = this.marketEvent.getId();
-        Set<Long> uniqueMarketsIds = this.marketDataEntities
+        Set<Long> uniqueMarketsIds = this.marketEvent.getMarkets()
                 .stream()
-                .map(MarketDataEntity::getMarketTypeId)
+                .map(EventMarket::getMarketTypeId)
                 .collect(Collectors.toSet());
-        Set<Long> uniqueSelectionIds = this.marketDataEntities
+        Set<Long> uniqueSelectionIds = this.marketEvent.getMarkets()
                 .stream()
-                .map(MarketDataEntity::getSelectionTypeId)
+                .flatMap(market -> market.getSelections().stream())
+                .map(EventSelection::getSelectionTypeId)
                 .collect(Collectors.toSet());
 
         return new ProcessedMarkets(
@@ -230,12 +231,12 @@ public class MarketsGenerator {
         List<Long> processedMarketsIds = this.marketReport.getMarkets()
                 .stream()
                 .map(ReportMarket::getMarketTypeId)
-                .collect(Collectors.toList());
+                .toList();
         List<Long> processedSelectionsIds = this.marketReport.getMarkets()
                 .stream()
                 .flatMap(market -> market.getSelections().stream())
                 .map(ReportSelection::getSelectionTypeId)
-                .collect(Collectors.toList());
+                .toList();
 
         return new ProcessedReportMarkets(reportId, processedMarketsIds, processedSelectionsIds);
     }
