@@ -10,10 +10,16 @@ import org.junit.jupiter.api.extension.ExtensionContext;
 import static org.junit.jupiter.api.Assertions.fail;
 import static utils.TestConstants.*;
 
-
 public class CleanDatabaseExtension implements BeforeAllCallback, BeforeEachCallback {
 
     private static Jdbi jdbi;
+
+    public static Jdbi getJdbi() {
+        if (jdbi == null) {
+            throw new IllegalStateException("JDBI is not initialized. Make sure that the CleanDatabaseExtension is in use");
+        }
+        return jdbi;
+    }
 
     @Override
     public void beforeAll(ExtensionContext context) throws Exception {

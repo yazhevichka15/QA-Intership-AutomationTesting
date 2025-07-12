@@ -1,11 +1,10 @@
 package steps;
 
-import static utils.TestConstants.*;
+import extensions.CleanDatabaseExtension;
 import models.MarketDataRecord;
 
 import io.qameta.allure.Step;
 import org.jdbi.v3.core.Jdbi;
-import org.jdbi.v3.core.mapper.reflect.BeanMapper;
 
 import java.util.List;
 
@@ -15,11 +14,11 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static java.util.concurrent.TimeUnit.SECONDS;
 
 public class DbSteps {
-    private static final Jdbi jdbi;
 
-    static {
-        jdbi = Jdbi.create(POSTGRES_JDBC_URL, POSTGRES_USER, POSTGRES_PASSWORD);
-        jdbi.registerRowMapper(BeanMapper.factory(MarketDataRecord.class));
+    private final Jdbi jdbi;
+
+    public DbSteps() {
+        this.jdbi = CleanDatabaseExtension.getJdbi();
     }
 
     @Step("Waiting for {expectedSize} records in the table with event_id {eventId}")
