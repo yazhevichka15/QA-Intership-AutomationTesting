@@ -1,16 +1,18 @@
 package steps;
 
-import io.qameta.allure.Step;
+import static utils.TestConstants.*;
 import models.MarketDataRecord;
+
+import io.qameta.allure.Step;
 import org.jdbi.v3.core.Jdbi;
 import org.jdbi.v3.core.mapper.reflect.BeanMapper;
 
 import java.util.List;
 
-import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.awaitility.Awaitility.await;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static utils.TestConstants.*;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static java.util.concurrent.TimeUnit.SECONDS;
 
 public class DbSteps {
     private static final Jdbi jdbi;
@@ -20,7 +22,7 @@ public class DbSteps {
         jdbi.registerRowMapper(BeanMapper.factory(MarketDataRecord.class));
     }
 
-    @Step("Waiting for {expectedSize} records in the table for event_id {eventId}")
+    @Step("Waiting for {expectedSize} records in the table with event_id {eventId}")
     public void waitForDataInTable(int expectedSize, String eventId) {
         await().atMost(15, SECONDS)
                 .pollInterval(1, SECONDS)
@@ -31,7 +33,7 @@ public class DbSteps {
                 });
     }
 
-    @Step("Get records from the market_data table for event_id {eventId}")
+    @Step("Get records from the market_data table with event_id {eventId}")
     public List<MarketDataRecord> getMarketDataTable(String eventId) {
         String selectQuery =
                 "SELECT event_id, market_type_id, selection_type_id, price, probability, status FROM market_data WHERE event_id = :eventId::bigint";
@@ -41,5 +43,22 @@ public class DbSteps {
                         .mapTo(MarketDataRecord.class)
                         .list()
         );
+    }
+
+    @Step("Checking the market_data table is empty with event_id {eventId} records")
+    public void assertTableIsEmpty(String eventId) {
+        await().atMost(15, SECONDS)
+                .pollInterval(1, SECONDS)
+                .untilAsserted(() -> {
+                    String selectQuery = "SELECT event_id FROM market_data WHERE event_id = :eventId::bigint";
+                    List<Long> eventIds = jdbi.withHandle(handle ->
+                            handle.createQuery(selectQuery)
+                                    .bind("eventId", eventId)
+                                    .mapTo(Long.class)
+                                    .list()
+                    );
+                    assertTrue(eventIds.isEmpty(),
+                            "The table was expected to be empty, but records were found: " + eventIds.size());
+                });
     }
 }

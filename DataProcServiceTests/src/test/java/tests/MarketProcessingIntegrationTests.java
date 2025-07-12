@@ -3,15 +3,14 @@ package tests;
 import annotations.CleanUpDatabase;
 import annotations.CleanUpKafkaTopics;
 
+import steps.*;
+import utils.*;
+
 import models.MarketDataEntity;
 import models.MarketDataRecord;
+
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.junit.jupiter.api.*;
-import steps.AssertSteps;
-import steps.DbSteps;
-import steps.KafkaSteps;
-import steps.MarketsGenerator;
-import utils.RandomUtils;
 
 import java.util.List;
 
@@ -37,9 +36,6 @@ class MarketProcessingIntegrationTests {
     @DisplayName("Should process valid market event, verify database and output topic")
     void testProcessMarketEvent() {
         String marketEventJson = marketsGenerator.getMarketEventAsJson();
-
-        System.out.println(marketEventJson);
-
         String expectedProcessedMarketsJson = marketsGenerator.getProcessedMarketsAsJson();
         List<MarketDataEntity> expectedMarketData = marketsGenerator.getMarketDataEntities();
 
@@ -55,5 +51,39 @@ class MarketProcessingIntegrationTests {
         assertSteps.assertKafkaRecord(TEST_EVENT_ID, expectedProcessedMarketsJson, actualRecords.getLast());
     }
 
+    @Test
+    @CleanUpKafkaTopics({INPUT_TOPIC, OUTPUT_TOPIC})
+    @DisplayName("Should process valid market report, verify database and output topic")
+    void testProcessMarketReport() {
+        String marketReportJson = marketsGenerator.getMarketReportAsJson();
+        String expectedProcessedReportMarketsJson = marketsGenerator.getProcessedReportMarketsAsJson();
+        List<MarketDataEntity> expectedMarketData = marketsGenerator.getMarketDataReportEntities();
 
+        kafkaSteps.sendMessageToTopic(INPUT_TOPIC, TEST_EVENT_ID, marketReportJson);
+
+        dbSteps.waitForDataInTable(expectedMarketData.size(), TEST_EVENT_ID);
+        List<MarketDataRecord> marketDataTable = dbSteps.getMarketDataTable(TEST_EVENT_ID);
+
+        assertSteps.assertMarketDataReportRecords(marketDataTable, expectedMarketData);
+
+        List<ConsumerRecord<String, String>> actualRecords =
+                kafkaSteps.consumeMessagesFromTopic(OUTPUT_TOPIC, TEST_EVENT_ID);
+        assertSteps.assertKafkaRecord(TEST_EVENT_ID, expectedProcessedReportMarketsJson, actualRecords.getLast());
+    }
+
+    @Test
+    @CleanUpKafkaTopics({INPUT_TOPIC, OUTPUT_TOPIC})
+    @DisplayName("Should process invalid input, verify database and output topic with an error message")
+    void testProcessInvalidInput() {
+        String invalidJson = marketsGenerator.getInvalidJson();
+        String expectedErrorMessageJson = marketsGenerator.getErrorMessageAsJson();
+
+        kafkaSteps.sendMessageToTopic(INPUT_TOPIC, TEST_EVENT_ID, invalidJson);
+
+        dbSteps.assertTableIsEmpty(TEST_EVENT_ID);
+
+        List<ConsumerRecord<String, String>> actualRecords =
+                kafkaSteps.consumeMessagesFromTopic(OUTPUT_TOPIC, TEST_EVENT_ID);
+        assertSteps.assertKafkaRecord(TEST_EVENT_ID, expectedErrorMessageJson, actualRecords.getLast());
+    }
 }

@@ -1,10 +1,11 @@
 package steps;
 
+import static utils.TestConstants.*;
+
 import io.qameta.allure.Step;
 import org.apache.kafka.clients.consumer.*;
 import org.apache.kafka.clients.producer.*;
-import org.apache.kafka.common.serialization.StringDeserializer;
-import org.apache.kafka.common.serialization.StringSerializer;
+import org.apache.kafka.common.serialization.*;
 
 import java.time.Duration;
 import java.util.Collections;
@@ -16,7 +17,6 @@ import java.util.stream.StreamSupport;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static utils.TestConstants.KAFKA_BOOTSTRAP_SERVERS;
 
 public class KafkaSteps {
 
@@ -49,11 +49,10 @@ public class KafkaSteps {
     @Step("Sending the message {message} to the topic {topic} with the key {key}")
     public void sendMessageToTopic(String topic, String key, String message) {
         ProducerRecord<String, String> record = new ProducerRecord<>(topic, key, message);
-
         try {
             producer.send(record).get(10, SECONDS);
         } catch (InterruptedException | ExecutionException | TimeoutException e) {
-            throw new RuntimeException("Failed to send a message to a topic " + topic, e);
+            throw new RuntimeException("Failed to send the message to a topic " + topic, e);
         }
     }
 
@@ -71,6 +70,7 @@ public class KafkaSteps {
         assertFalse(actualMessages.isEmpty(), "No messages with key " + key + " found");
         return actualMessages;
     }
+
 
     @Step("Close Kafka clients")
     public void closeKafkaClients() {
