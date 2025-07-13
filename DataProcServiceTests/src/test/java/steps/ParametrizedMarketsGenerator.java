@@ -1,5 +1,6 @@
 package steps;
 
+import lombok.Getter;
 import models.MarketDataRecord;
 import models.input.SelectionsStatuses;
 import models.input.event.EventMarket;
@@ -17,8 +18,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
+@Getter
 public class ParametrizedMarketsGenerator extends MarketsGenerator {
 
     private final MarketEvent parametrizedMarketEvent;
@@ -33,8 +36,8 @@ public class ParametrizedMarketsGenerator extends MarketsGenerator {
     public ParametrizedMarketsGenerator(String id, SelectionsStatuses status) {
         super(id);
 
-        this.parametrizedMarketEvent = createMarketEventWithStatus(Long.parseLong(id), 2, status);
-        this.parametrizedMarketReport = createMarketReportWithStatus(Long.parseLong(id), 2, status);
+        this.parametrizedMarketEvent = createMarketEventWithStatus(Long.parseLong(id), 3, status);
+        this.parametrizedMarketReport = createMarketReportWithStatus(Long.parseLong(id), 3, status);
 
         this.parametrizedMarketDataRecords = convertParametrizedMarketEventToMarketData();
         this.parametrizedMarketReportDataRecords = convertParametrizedMarketReportToMarketData();
@@ -47,31 +50,21 @@ public class ParametrizedMarketsGenerator extends MarketsGenerator {
         return new MarketEvent(
                 id,
                 status.toStringStatus(),
-                createEventMarkets(marketsCount, status)
+                createMarkets(marketsCount, status, this::createEventMarket)
         );
     }
 
     private MarketReport createMarketReportWithStatus(long id, int marketsCount, SelectionsStatuses status) {
         return new MarketReport(
                 id,
-                createReportMarkets(marketsCount, status)
+                createMarkets(marketsCount, status, this::createReportMarket)
         );
     }
 
-    private List<EventMarket> createEventMarkets(long count, SelectionsStatuses status) {
-        List<EventMarket> markets = new ArrayList<>();
+    protected <T> List<T> createMarkets(long count, SelectionsStatuses status, Function<SelectionsStatuses, T> marketCreator) {
+        List<T> markets = new ArrayList<>();
         for (int i = 0; i < count; i++) {
-            EventMarket market = createEventMarket(status);
-            markets.add(market);
-        }
-        return markets;
-    }
-
-    private List<ReportMarket> createReportMarkets(long count, SelectionsStatuses status) {
-        List<ReportMarket> markets = new ArrayList<>();
-        for (int i = 0; i < count; i++) {
-            ReportMarket market = createReportMarket(status);
-            markets.add(market);
+            markets.add(marketCreator.apply(status));
         }
         return markets;
     }
@@ -83,7 +76,7 @@ public class ParametrizedMarketsGenerator extends MarketsGenerator {
         return new EventMarket(
                 marketTypeId,
                 List.of(createSpecifier(), createSpecifier()),
-                createEventSelections(randomMarket, status)
+                createSelections(randomMarket, status, id -> createEventSelection(id, status))
         );
     }
 
@@ -93,28 +86,15 @@ public class ParametrizedMarketsGenerator extends MarketsGenerator {
 
         return new ReportMarket(
                 marketTypeId,
-                createReportSelections(randomMarket, status)
+                createSelections(randomMarket, status, id -> createReportSelection(id, status))
         );
     }
 
-    private List<EventSelection> createEventSelections(Map<String, Object> market, SelectionsStatuses status) {
-        List<EventSelection> selections = new ArrayList<>();
+    protected <T> List<T> createSelections(Map<String, Object> market, SelectionsStatuses status, Function<Long, T> selectionCreator) {
+        List<T> selections = new ArrayList<>();
         List<Long> selectionIds = (List<Long>) market.get("selections_ids");
-
         for (Long selectionId : selectionIds) {
-            EventSelection selection = createEventSelection(selectionId, status);
-            selections.add(selection);
-        }
-        return selections;
-    }
-
-    private List<ReportSelection> createReportSelections(Map<String, Object> market, SelectionsStatuses status) {
-        List<ReportSelection> selections = new ArrayList<>();
-        List<Long> selectionIds = (List<Long>) market.get("selections_ids");
-
-        for (Long selectionId : selectionIds) {
-            ReportSelection selection = createReportSelection(selectionId, status);
-            selections.add(selection);
+            selections.add(selectionCreator.apply(selectionId));
         }
         return selections;
     }
@@ -134,7 +114,6 @@ public class ParametrizedMarketsGenerator extends MarketsGenerator {
         );
     }
 
-
     private List<MarketDataRecord> convertParametrizedMarketEventToMarketData() {
         Long eventId = this.parametrizedMarketEvent.getId();
         return this.parametrizedMarketEvent.getMarkets()
@@ -145,6 +124,7 @@ public class ParametrizedMarketsGenerator extends MarketsGenerator {
                             Integer statusInt = selection.getStatus();
                             SelectionsStatuses status = SelectionsStatuses.of(statusInt);
                             Odds odds = selection.getOdds();
+
                             Double price = status.isFinal() ? null : odds.getPrice();
                             Double probability = status.isFinal() ? null : odds.getProbability();
 
@@ -219,47 +199,24 @@ public class ParametrizedMarketsGenerator extends MarketsGenerator {
         return new ProcessedReportMarkets(
                 reportId,
                 processedMarketsIds,
-                processedSelectionIds);
+                processedSelectionIds
+        );
     }
 
     public String getParametrizedMarketEventAsJson() {
-        try {
-            return MAPPER.writeValueAsString(parametrizedMarketEvent);
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to serialize parametrized MarketEvent to JSON", e);
-        }
-    }
-
-    public String getParametrizedProcessedMarketsAsJson() {
-        try {
-            return MAPPER.writeValueAsString(parametrizedProcessedMarkets);
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to serialize parametrized ProcessedMarkets to JSON", e);
-        }
-    }
-
-    public List<MarketDataRecord> getParametrizedMarketDataRecords() {
-        return parametrizedMarketDataRecords;
+        return toJson(parametrizedMarketEvent);
     }
 
     public String getParametrizedMarketReportAsJson() {
-        try {
-            return MAPPER.writeValueAsString(parametrizedMarketReport);
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to serialize parametrized MarketReport to JSON", e);
-        }
+        return toJson(parametrizedMarketReport);
     }
 
-    public List<MarketDataRecord> getParametrizedMarketReportDataRecords() {
-        return parametrizedMarketReportDataRecords;
+    public String getParametrizedProcessedMarketsAsJson() {
+        return toJson(parametrizedProcessedMarkets);
     }
 
     public String getParametrizedProcessedReportMarketsAsJson() {
-        try {
-            return MAPPER.writeValueAsString(parametrizedProcessedReportMarkets);
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to serialize parametrized ProcessedReportMarkets to JSON", e);
-        }
+        return toJson(parametrizedProcessedReportMarkets);
     }
 }
 

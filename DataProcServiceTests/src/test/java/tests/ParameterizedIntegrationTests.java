@@ -57,7 +57,7 @@ class ParameterizedIntegrationTests {
     @ParameterizedTest
     @EnumSource(SelectionsStatuses.class)
     @CleanUpKafkaTopics({INPUT_TOPIC, OUTPUT_TOPIC})
-    @DisplayName("Should process valid market report with fixed status {0}, verify database and output topic")
+    @DisplayName("Should process valid market report with fixed status {status}, verify database and output topic")
     void testProcessMarketReportWithFixedStatus(SelectionsStatuses status) {
         paramMarketsGenerator = new ParametrizedMarketsGenerator(TEST_EVENT_ID, status);
 
