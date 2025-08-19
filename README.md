@@ -1,6 +1,6 @@
-# Automation QA Intership
+# Automation QA Intership (Altenar)
 
-This repository contains modules with automation QA internship homework assignments
+This repository contains modules with automation QA internship homework assignments 
 
 > Created for educational purposes to learn unit testing and improve java programming skills
 
@@ -21,6 +21,8 @@ This repository contains modules with automation QA internship homework assignme
 -   PostgreSQL
 -   JDBI
 -   Awaitility
+-   JUnit Extensions
+-   JSON Unit Fluent
 
 ---
 
@@ -155,14 +157,19 @@ This is the implementation of integration test scripts for a market processing a
 
 ### Project Structure
 
--   `MarketDataRecord` — this class is a model for objects of the type `MarketData`, it contains fields from the table `market_data` and getters and setters
--   `MarketProcessingIntegrationTests` — this class contains test scripts for a market processing application
+-   `annotations` — this package contains two custom annotations `@CleanUpDatabase`, `@CleanUpKafkaTopics`
+-   `extensions` — this package contains extensions for custom annotations. It is executed before each test, is needed to clean up data in tops and clean up the database table
+-   `models` — this package contains classes that are models for generating input and output JSONs
+-   `steps` — this package contains classes that allow to break the test into steps - taking out the logic to work with Kafka, database and generate input and output JSONs
+-   `tests` — this class contains test classes `MarketProcessingIntegrationTests`, `ParameterizedIntegrationTests`
+-   `utils` — this package contains helping classes — classes with constants, for working with JSON and generating random objects
 
 Key features that have been tested:
 
 -   processing valid MarketEvent input
 -   processing valid MarketReport input
 -   processing invalid input
+-   parameterized tests (markets with the same selection's statuses)
 
 ### Installation
 

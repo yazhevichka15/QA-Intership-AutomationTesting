@@ -5,6 +5,7 @@ val postgresVersion = "42.7.3"
 val jacksonVersion = "2.17.0"
 val awaitilityVersion = "4.2.1"
 val slf4jVersion = "2.0.13"
+val jsonUnitFluentVersion = "3.2.2"
 
 plugins {
     id("java")
@@ -18,6 +19,11 @@ repositories {
 }
 
 dependencies {
+    annotationProcessor("org.projectlombok:lombok:1.18.30")
+    testAnnotationProcessor("org.projectlombok:lombok:1.18.30")
+
+    implementation("org.projectlombok:lombok:1.18.30")
+
     testImplementation(platform("org.junit:junit-bom:$junitVersion"))
     testImplementation("org.junit.jupiter:junit-jupiter")
     testImplementation("io.qameta.allure:allure-junit5:2.24.0")
@@ -35,6 +41,8 @@ dependencies {
     testImplementation("org.awaitility:awaitility:$awaitilityVersion")
 
     testImplementation("org.slf4j:slf4j-simple:$slf4jVersion")
+
+    testImplementation("net.javacrumbs.json-unit:json-unit-fluent:$jsonUnitFluentVersion")
 }
 
 tasks.test {
